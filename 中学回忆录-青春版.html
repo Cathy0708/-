@@ -1,0 +1,3034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFBF4">
+<title>中学回忆录 · 我们的青春纪念册</title>
+<style>
+/* ============================================================
+   中学回忆录 · 单文件网页
+   设计基调：温暖 / 现代 / 青春明快色系 / 系统字体 / 移动端优先
+   ============================================================ */
+
+/* ---------- 1. 设计变量（三套青春配色可切换） ---------- */
+:root{
+  --a1:#6FD9B0;          /* 薄荷青 */
+  --a2:#FFCE73;          /* 奶油黄 */
+  --a3:#79C0F2;          /* 晴空蓝 */
+  --a4:#FF9EB5;          /* 水蜜桃 */
+  --a5:#B7A6F2;          /* 香芋紫 */
+  --ink:#3E3A44;         /* 主文字 柔和墨紫 */
+  --ink-soft:#8A8390;    /* 次文字 */
+  --paper:#FFFFFF;       /* 卡片底 */
+  --page:#FFFBF4;        /* 页面底 暖奶油 */
+  --rule:rgba(111,217,176,.24);
+  --shadow:0 16px 36px -20px rgba(88,74,62,.40);
+  --radius:26px;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable","Segoe UI",system-ui,
+         "PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei",
+         "Noto Sans CJK SC",sans-serif;
+}
+body.theme-citrus{                 /* 海盐柠檬 */
+  --a1:#45C4B0; --a2:#FFE082; --a3:#68D6F5; --a4:#FF9EC4; --a5:#C3B2F5;
+  --rule:rgba(69,196,176,.24); --page:#F7FCFA; --shadow:0 16px 36px -20px rgba(60,90,90,.40);
+}
+body.theme-peach{                  /* 蜜桃汽水 */
+  --a1:#FF9E7D; --a2:#FFE1A8; --a3:#7FD4E8; --a4:#FF8FA3; --a5:#C5B4F0;
+  --rule:rgba(255,158,125,.26); --page:#FFF9F5; --shadow:0 16px 36px -20px rgba(120,74,58,.40);
+}
+
+/* ---------- 2. 基础 ---------- */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--page);
+  line-height:1.75;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+button,input,textarea,select{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:inherit}
+::selection{background:var(--a2);color:#3E3A44}
+
+/* 青春感：彩色柔光斑 + 细噪点纸纹 */
+.bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(78px);opacity:.62}
+.blob.b1{width:340px;height:340px;background:var(--a2);top:-100px;left:-90px}
+.blob.b2{width:300px;height:300px;background:var(--a4);top:24%;right:-120px}
+.blob.b3{width:360px;height:360px;background:var(--a3);bottom:6%;left:-130px}
+.blob.b4{width:280px;height:280px;background:var(--a5);bottom:-90px;right:-70px}
+.blob.b5{width:220px;height:220px;background:var(--a1);top:52%;right:24%}
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.20;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
+}
+
+/* ---------- 3. 顶部进度条 & 导航 ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.65);z-index:60}
+.progress i{display:block;height:100%;width:0;border-radius:0 4px 4px 0;
+  background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4),var(--a5));transition:width .1s linear}
+
+.nav{
+  position:sticky;top:5px;z-index:50;margin:14px auto 0;padding:10px 14px;
+  max-width:1120px;display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:2px solid rgba(255,255,255,.9);border-radius:999px;box-shadow:var(--shadow);
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;white-space:nowrap}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--a1);
+  box-shadow:14px 0 0 var(--a2),28px 0 0 var(--a3);margin-right:28px}
+.nav-links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  padding:7px 15px;border-radius:999px;font-size:14px;font-weight:700;text-decoration:none;
+  color:var(--ink-soft);white-space:nowrap;transition:.2s;
+}
+.nav-links a:hover{background:var(--page);color:var(--ink)}
+.nav-links a.on{background:var(--a3);color:#fff;box-shadow:0 6px 16px -8px rgba(62,58,68,.75)}
+
+/* ---------- 4. 封面 ---------- */
+.wrap{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:0 20px}
+.cover{
+  position:relative;margin:26px 0 30px;border-radius:34px;overflow:hidden;
+  min-height:clamp(430px,74vh,660px);display:flex;align-items:flex-end;
+  box-shadow:0 28px 62px -32px rgba(80,66,54,.55);isolation:isolate;
+  background:linear-gradient(135deg,var(--a1) 0%,var(--a3) 38%,var(--a5) 72%,var(--a4) 100%);
+}
+.cover-slides{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.cover-slide{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.1s ease;
+}
+.cover-slide.on{opacity:1}
+.cover-slide.kenburns{animation:kb 6s linear forwards}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.12)}}
+/* 轮播指示点 */
+.cover-dots{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:3;
+  display:flex;gap:7px;align-items:center;padding:6px 12px;border-radius:999px;
+  background:rgba(54,46,42,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.cover-dots.hide{display:none}
+.cover-dots button{
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);
+  transition:.25s;padding:0;border:none;cursor:pointer;
+}
+.cover-dots button.on{background:#fff;width:22px;border-radius:999px}
+.cover-dots .num{
+  font-size:11px;font-weight:800;color:#fff;letter-spacing:.06em;margin:0 3px;
+  font-variant-numeric:tabular-nums;
+}
+.cover::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(70,60,52,.05) 0%,rgba(64,55,48,.32) 42%,rgba(54,46,42,.78) 100%);
+}
+/* ---------- 封面弹幕 ----------
+   规则：
+     · 弹幕显示在封面图片「上方」（z-index 高于封面配图）
+     · 垂直方向只占封面的上方 1/3，绝不侵入下方的主标题/副标题区
+     · 主标题 + 副标题位于封面左下角，整体占位不超过封面的 1/3 */
+.danmaku-layer{
+  position:absolute;left:0;right:0;top:0;height:33.333%;
+  z-index:1;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 74%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 74%,transparent 100%);
+}
+.danmaku{
+  position:absolute;white-space:nowrap;
+  font-size:clamp(12px,2.5vw,16px);font-weight:800;line-height:1.4;
+  color:#fff;text-shadow:0 2px 8px rgba(40,32,28,.6),0 0 2px rgba(40,32,28,.8);
+  will-change:transform,opacity;animation:dmFly linear forwards;
+}
+@keyframes dmFly{
+  0%{transform:translate3d(100vw,0,0);opacity:0}
+  8%{opacity:1}
+  90%{opacity:1}
+  100%{transform:translate3d(-100%,0,0);opacity:0}
+}
+/* 弹幕配色：与三套青春主题的糖果色一致 */
+.danmaku:nth-child(5n+1){color:#FFF6C9}
+.danmaku:nth-child(5n+2){color:#FFD9E4}
+.danmaku:nth-child(5n+3){color:#C9F5E4}
+.danmaku:nth-child(5n+4){color:#E4DCFF}
+.danmaku:nth-child(5n){color:#FFE0C2}
+
+/* 主标题 + 副标题：左下角，整体不超过封面 1/3 */
+.cover-in{
+  position:relative;z-index:2;width:100%;
+  max-height:33.333%;padding:clamp(16px,3vw,30px) clamp(20px,4.4vw,52px);
+  color:#fff;display:flex;flex-direction:column;justify-content:flex-end;
+}
+.eyebrow{
+  display:inline-flex;align-self:flex-start;align-items:center;gap:8px;margin:0 0 10px;
+  padding:5px 13px;border-radius:999px;background:rgba(255,255,255,.24);
+  border:1px solid rgba(255,255,255,.5);font-size:11px;font-weight:800;letter-spacing:.22em;
+}
+.cover h1{
+  margin:0 0 6px;font-size:clamp(28px,6.6vw,58px);line-height:1.08;font-weight:900;
+  letter-spacing:-.02em;text-shadow:0 6px 28px rgba(54,46,42,.34);
+}
+.cover .sub{margin:0;font-size:clamp(12.5px,2.8vw,17px);font-weight:600;opacity:.95;max-width:44ch}
+
+/* 弹幕发送区（封面外下方） */
+.danmaku-send{
+  margin:-12px 0 30px;padding:16px clamp(14px,2.4vw,22px);
+  border-radius:6px 10px 5px 12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,252,246,.5));
+  border:1px dashed rgba(184,154,114,.4);
+  box-shadow:0 10px 24px -18px rgba(80,66,54,.5);
+}
+.ds-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ds-title{font-size:14px;font-weight:900;color:var(--ink)}
+.ds-count{margin-left:auto;font-size:12px;font-weight:800;color:var(--ink-soft);
+  background:var(--paper);border:1.5px solid rgba(62,58,68,.28);border-radius:999px;padding:3px 11px}
+.ds-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ds-input{
+  flex:1;min-width:220px;padding:11px 15px;font-size:14px;font-weight:700;font-family:inherit;
+  border:2px solid var(--rule);border-radius:14px;background:var(--paper);
+  outline:none;color:var(--ink);box-shadow:inset 0 2px 5px -3px rgba(150,124,92,.35);
+}
+.ds-input::placeholder{color:#BDB4BF;font-weight:600}
+.ds-input:focus{border-color:var(--ink);background:#fff}
+.ds-tip{margin-top:9px;font-size:12px;line-height:1.85;color:var(--ink-soft);font-weight:600}
+.scroll-cue{
+  position:absolute;right:clamp(18px,4vw,44px);top:clamp(18px,4vw,36px);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:11px;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.94);
+}
+.scroll-cue i{display:block;width:2px;height:34px;background:rgba(255,255,255,.65);border-radius:2px;
+  animation:drop 1.8s ease-in-out infinite}
+@keyframes drop{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(9px);opacity:1}}
+
+/* ---------- 5. 工具条 ---------- */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 26px}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:999px;
+  font-size:14px;font-weight:800;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+  box-shadow:3px 3px 0 var(--ink);transition:.15s;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.p1{background:var(--a2)} .btn.p2{background:var(--a1)}
+.btn.p3{background:var(--a4)} .btn.p4{background:var(--a5)}
+.btn.ghost{border-color:var(--ink-soft);box-shadow:3px 3px 0 var(--ink-soft);color:var(--ink-soft);background:transparent}
+.toolbar .hint{margin-left:auto;font-size:12px;color:var(--ink-soft);font-weight:600}
+
+/* ---------- 6. 章节：拟纸张形态 ----------
+   手撕纸边角 + 纸纤维纹理 + 底部锯齿毛边 + 胶带固定 + 极轻微旋转错落 */
+.chapter{
+  position:relative;isolation:isolate;
+  background:
+    linear-gradient(168deg,#FFFDF9 0%,#FFF9F0 46%,#FFFCF6 78%,#FFF7EC 100%);
+  border-radius:3px 9px 4px 12px;      /* 刻意不规则，像手撕纸 */
+  padding:clamp(22px,4.6vw,42px) clamp(20px,4.4vw,40px) clamp(26px,5vw,44px);
+  margin:0 0 46px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    inset 0 -22px 34px -30px rgba(176,148,110,.55),
+    0 1px 2px rgba(120,96,70,.10),
+    0 10px 20px -14px rgba(120,96,70,.34),
+    0 30px 48px -34px rgba(120,96,70,.42);
+  rotate:-.35deg;                      /* 独立 rotate 属性，不与 reveal 的 transform 打架 */
+}
+/* 纸纤维纹理 */
+.chapter::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+  background-image:
+    repeating-linear-gradient(94deg,rgba(184,154,114,.055) 0 1px,rgba(0,0,0,0) 1px 4px),
+    repeating-linear-gradient(4deg,rgba(184,154,114,.042) 0 1px,rgba(0,0,0,0) 1px 7px),
+    repeating-linear-gradient(132deg,rgba(255,255,255,.5) 0 1px,rgba(0,0,0,0) 1px 5px);
+  opacity:.9;
+}
+/* 底部锯齿毛边（两排三角交错） */
+.chapter::after{
+  content:"";position:absolute;left:1px;right:1px;bottom:-9px;height:10px;z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(135deg,rgba(0,0,0,0) 50%,#FFF8EE 50%) 0 0/13px 10px repeat-x,
+    linear-gradient(225deg,rgba(0,0,0,0) 50%,#FFF8EE 50%) 0 0/13px 10px repeat-x;
+}
+/* 内容层始终高于纹理层 */
+.chapter > *{position:relative;z-index:1}
+.chapter-head{display:flex;align-items:flex-start;gap:14px;margin:6px 0 18px;flex-wrap:wrap}
+/* 顶部胶带（贴在纸上沿，略微倾斜） */
+.chapter-head::before{
+  content:"";position:absolute;top:-15px;left:5%;width:104px;height:27px;
+  background:linear-gradient(180deg,rgba(255,206,115,.62),rgba(255,206,115,.34));
+  border-left:1px dashed rgba(255,255,255,.7);border-right:1px dashed rgba(255,255,255,.7);
+  rotate:-2.4deg;border-radius:2px;opacity:.9;
+  box-shadow:0 2px 6px -3px rgba(120,96,70,.5);
+}
+.chapter:nth-of-type(2) .chapter-head::before{background:linear-gradient(180deg,rgba(121,192,242,.55),rgba(121,192,242,.30));rotate:1.8deg}
+.chapter:nth-of-type(3) .chapter-head::before{background:linear-gradient(180deg,rgba(255,158,181,.55),rgba(255,158,181,.30));rotate:-1.4deg}
+.chapter:nth-of-type(4) .chapter-head::before{background:linear-gradient(180deg,rgba(183,166,242,.52),rgba(183,166,242,.28));rotate:2deg}
+.chapter:nth-of-type(5) .chapter-head::before{background:linear-gradient(180deg,rgba(111,217,176,.52),rgba(111,217,176,.28));rotate:-2.2deg}
+.chapter:nth-of-type(6) .chapter-head::before{background:linear-gradient(180deg,rgba(255,206,115,.58),rgba(255,206,115,.30));rotate:1.5deg}
+.chapter:nth-of-type(7) .chapter-head::before{background:linear-gradient(180deg,rgba(121,192,242,.50),rgba(121,192,242,.26));rotate:-1.7deg}
+.chapter:nth-of-type(8) .chapter-head::before{background:linear-gradient(180deg,rgba(255,158,181,.52),rgba(255,158,181,.28));rotate:2.3deg}
+.chapter:nth-of-type(2){rotate:.28deg}
+.chapter:nth-of-type(3){rotate:-.2deg}
+.chapter:nth-of-type(4){rotate:.24deg}
+.chapter:nth-of-type(5){rotate:-.16deg}
+.chapter:nth-of-type(6){rotate:.3deg}
+.chapter:nth-of-type(7){rotate:-.26deg}
+.chapter:nth-of-type(8){rotate:.18deg}
+.no{
+  font-size:13px;font-weight:900;letter-spacing:.1em;padding:7px 13px;border-radius:4px 9px 5px 8px;
+  background:var(--a2);color:#3E3A44;border:1.5px solid rgba(62,58,68,.72);
+  rotate:-1.2deg;box-shadow:2px 2px 0 rgba(62,58,68,.22);
+}
+.chapter:nth-of-type(2) .no{background:var(--a3);color:#fff;rotate:.9deg}
+.chapter:nth-of-type(3) .no{background:var(--a4);color:#3E3A44;rotate:-.7deg}
+.chapter:nth-of-type(4) .no{background:var(--a5);color:#fff;rotate:1.1deg}
+.chapter:nth-of-type(5) .no{background:var(--a1);color:#3E3A44;rotate:-.9deg}
+.chapter:nth-of-type(6) .no{background:var(--a2);color:#3E3A44;rotate:.8deg}
+.chapter:nth-of-type(7) .no{background:var(--a3);color:#fff;rotate:-1.2deg}
+.chapter:nth-of-type(8) .no{background:var(--a4);color:#3E3A44;rotate:1deg}
+.title-input{
+  flex:1;min-width:180px;font-size:clamp(20px,4.6vw,28px);font-weight:900;
+  border:none;border-bottom:2px dashed var(--rule);background:transparent;outline:none;padding:2px 4px 8px;
+}
+.title-input::placeholder{color:#BDB4BF}
+/* 板块备注（仅管理员可编辑）：贴在标题下方的一行小字说明 */
+.note-row{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-top:2px}
+.note-input{
+  flex:1;min-width:200px;font-size:13px;font-weight:700;line-height:1.7;
+  border:none;border-bottom:1px dashed var(--rule);background:transparent;outline:none;
+  padding:3px 4px 5px;color:var(--ink-soft);
+}
+.note-input::placeholder{color:#C6BDC8;font-weight:600}
+.note-input[readonly]{background:rgba(0,0,0,.02);border-bottom-color:rgba(184,154,114,.22);cursor:default}
+.note-badge{
+  flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;
+  font-size:11px;font-weight:800;letter-spacing:.3px;
+  background:color-mix(in srgb, var(--a2) 26%, #fff);
+  border:1px solid rgba(184,154,114,.34);color:var(--ink-soft);
+  rotate:-.7deg;white-space:nowrap;
+}
+.note-badge::before{content:"✎"}
+.note-badge.locked::before{content:"🔒"}
+/* 管理员本人：徽标解除锁定态 */
+.note-badge:not(.locked){background:color-mix(in srgb, var(--a2) 40%, #fff);color:var(--ink);border-color:var(--ink)}
+/* 标题仅管理员可编辑：只读时给出轻微提示底色 */
+.title-input[readonly]{cursor:default}
+.title-input[readonly]:hover{background:rgba(0,0,0,.018)}
+.note-view{
+  flex:1;font-size:13px;font-weight:700;line-height:1.8;color:var(--ink-soft);
+  padding:3px 4px 5px;min-width:200px;
+}
+.note-view:empty{display:none}
+.head-actions{display:flex;gap:8px;margin-left:auto}
+.mini{padding:7px 13px;border-radius:4px 9px 5px 8px;font-size:12.5px;font-weight:800;
+  background:var(--paper);border:1.5px solid rgba(62,58,68,.72);box-shadow:2px 2px 0 rgba(62,58,68,.22);rotate:.6deg}
+.mini:hover{background:var(--a2)}
+
+/* 横格纸输入区（纸上的书写区，微微内凹） */
+.paper{
+  position:relative;border-radius:6px 10px 7px 11px;
+  padding:8px 16px 16px;overflow:hidden;
+  border:1px solid rgba(184,154,114,.24);
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 40%);
+  box-shadow:inset 0 2px 5px -3px rgba(150,124,92,.35);
+}
+.paper::before{
+  content:"";position:absolute;left:12px;top:0;bottom:0;width:2px;background:rgba(255,158,181,.34);
+}
+.paper textarea{
+  width:100%;display:block;border:none;outline:none;background:transparent;resize:none;
+  font-size:clamp(15px,3.6vw,16.5px);line-height:35px;padding:2px 2px 4px;min-height:210px;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 34px,var(--rule) 34px 35px);
+  background-attachment:local;letter-spacing:.01em;
+}
+.paper textarea::placeholder{color:#C0B7C2}
+.editor-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.count{font-size:12px;font-weight:700;color:var(--ink-soft);padding:4px 11px;
+  background:color-mix(in srgb,var(--a1) 18%,#fff);border-radius:999px}
+.editor-bar .tip{font-size:12px;color:var(--ink-soft);margin-left:auto}
+
+/* 预览态 */
+.preview{display:none;font-size:clamp(15.5px,3.7vw,17.5px);line-height:2.05;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.chapter.reading .paper{display:none}
+.chapter.reading .preview{display:block}
+.preview:empty::before{content:"（这一段还是空白的，去写点什么吧）";color:#C0B7C2}
+.dropcap::first-letter{
+  float:left;font-size:3.1em;line-height:.9;font-weight:900;margin:6px 12px 0 0;
+  color:var(--a4);
+}
+
+/* ---------- 7. 小标签 ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.chip{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:3px 8px 4px 9px;
+  background:var(--paper);border:1.5px solid rgba(62,58,68,.66);box-shadow:2px 2px 0 rgba(62,58,68,.2);
+  transition:.15s}
+.chip:hover{background:var(--a2);transform:translateY(-1px)}
+
+/* ============================================================
+   7.5 互动板块：留言板 / 回忆录 / 剪贴报 / 表白墙 / 日记本 / 小论坛
+   ============================================================ */
+.admin-only-tag{
+  font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;
+  background:color-mix(in srgb,var(--a4) 22%,#fff);
+  border:1.5px dashed rgba(62,58,68,.5);color:var(--ink-soft);white-space:nowrap;
+}
+body.is-admin .admin-only-tag{display:none}
+
+/* 投稿区 */
+.composer{display:flex;flex-direction:column;gap:12px;padding:6px 2px 2px}
+.composer textarea{
+  width:100%;border:1.5px solid var(--rule);border-radius:12px;background:#fff;
+  outline:none;font-size:15px;line-height:1.75;padding:12px 14px;resize:vertical;
+  font-family:inherit;min-height:88px;
+}
+.composer textarea:focus{border-color:var(--a3);box-shadow:0 0 0 3px color-mix(in srgb,var(--a3) 18%,transparent)}
+.composer textarea::placeholder{color:#C0B7C2}
+.topic-input{
+  width:100%;border:1.5px solid var(--rule);border-radius:12px;background:#fff;outline:none;
+  font-size:15.5px;font-weight:800;padding:11px 14px;font-family:inherit;color:var(--ink);
+}
+.topic-input:focus{border-color:var(--a3);box-shadow:0 0 0 3px color-mix(in srgb,var(--a3) 18%,transparent)}
+.topic-input::placeholder{color:#C0B7C2;font-weight:700}
+.composer-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn.sm{padding:9px 17px;font-size:13px}
+.anon-toggle{display:inline-flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+.anon-toggle input{width:15px;height:15px;accent-color:var(--a4);cursor:pointer}
+.anon-toggle:has(input:checked){background:var(--a4);color:var(--ink);border-color:var(--ink)}
+.up-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.up-btn{cursor:pointer}
+.up-note{font-size:12px;color:var(--ink-soft);font-weight:600;line-height:1.85}
+.feed-count{font-size:12px;font-weight:800;color:var(--ink-soft);padding:5px 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--a1) 20%,#fff);white-space:nowrap}
+
+/* 帖子列表 */
+.feed{display:flex;flex-direction:column;gap:13px;margin-top:20px}
+.feed:empty{display:none}
+.post{
+  position:relative;padding:14px 16px;border-radius:4px 11px 5px 12px;
+  background:linear-gradient(168deg,rgba(255,255,255,.94),rgba(255,252,246,.86));
+  border:1.5px solid rgba(184,154,114,.34);
+  box-shadow:0 2px 4px -2px rgba(120,96,70,.16), 0 10px 18px -14px rgba(120,96,70,.4);
+}
+.post::before{
+  content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;
+  background:linear-gradient(180deg,var(--a2),var(--a4));
+}
+.post-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+.avatar{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-size:13px;font-weight:900;color:#3E3A44;
+  background:color-mix(in srgb,var(--a1) 34%,#fff);
+  border:1.5px solid rgba(62,58,68,.5);
+}
+.avatar.anon{background:color-mix(in srgb,var(--rule) 40%,#fff);color:var(--ink-soft)}
+.post-name{font-size:13.5px;font-weight:900;color:var(--ink)}
+.post-name.anon{color:var(--ink-soft)}
+.post-time{font-size:11.5px;color:var(--ink-soft);font-weight:600}
+.post-del{
+  margin-left:auto;background:none;border:none;cursor:pointer;font-size:11.5px;font-weight:800;
+  color:var(--ink-soft);opacity:.55;padding:3px 8px;border-radius:999px;transition:.15s;
+}
+.post-del:hover{opacity:1;background:color-mix(in srgb,var(--a4) 26%,#fff);color:var(--ink)}
+.post-title{font-size:16.5px;font-weight:900;color:var(--ink);margin:0 0 7px;line-height:1.5}
+.post-text{font-size:14.5px;line-height:1.9;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.post-text:empty{display:none}
+.post-anon-flag{
+  font-size:10.5px;font-weight:900;padding:2px 8px;border-radius:999px;
+  background:color-mix(in srgb,var(--a2) 34%,#fff);border:1px dashed rgba(62,58,68,.5);color:var(--ink-soft);
+}
+.feed-empty{font-size:13px;color:var(--ink-soft);font-weight:600;padding:14px 2px;text-align:center}
+
+/* ---------- 小论坛：点赞 + 评论 ----------
+   说明：点赞与评论均不产生任何通知提醒，也不给作者展示「谁赞了我 / 谁评论了我」 */
+.post-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;
+  padding-top:11px;border-top:1px dashed rgba(184,154,114,.4)}
+.act{
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+  font-size:12.5px;font-weight:800;padding:6px 13px;border-radius:999px;
+  background:var(--paper);border:1.5px solid rgba(62,58,68,.42);color:var(--ink-soft);
+  transition:.15s;
+}
+.act:hover{background:var(--a2);color:var(--ink);transform:translateY(-1px)}
+.act .ic{font-size:13px;line-height:1}
+.act .n{min-width:1ch;text-align:left;font-variant-numeric:tabular-nums}
+/* 已点赞状态 */
+.act.liked{background:var(--a4);border-color:var(--ink);color:var(--ink);box-shadow:2px 2px 0 rgba(62,58,68,.18)}
+.act.liked .ic{transform:scale(1.12)}
+.act .ic{display:inline-block;transition:transform .18s ease}
+.act.off{opacity:.5;cursor:not-allowed}
+.act.off:hover{transform:none;background:var(--paper)}
+/* 未登录时的操作入口提示 */
+.act.locked .n{display:none}
+
+/* 评论展开区 */
+.comment-box{margin-top:12px;padding:13px 14px;border-radius:4px 10px 5px 11px;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,252,246,.6));
+  border:1px solid rgba(184,154,114,.3)}
+.comment-form{display:flex;gap:9px;align-items:flex-start;flex-wrap:wrap}
+.comment-form textarea{
+  flex:1;min-width:180px;border:1.5px solid var(--rule);border-radius:10px;background:#fff;
+  outline:none;font-size:13.5px;line-height:1.65;padding:10px 12px;resize:vertical;
+  font-family:inherit;min-height:44px;
+}
+.comment-form textarea:focus{border-color:var(--a3);box-shadow:0 0 0 3px color-mix(in srgb,var(--a3) 18%,transparent)}
+.comment-form textarea::placeholder{color:#C0B7C2}
+.comment-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.comment-list:empty{display:none}
+.comment{
+  display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border-radius:3px 9px 4px 10px;
+  background:rgba(255,255,255,.7);border:1px solid rgba(184,154,114,.22);
+}
+.comment .avatar{width:24px;height:24px;font-size:11px;border-width:1px}
+.comment-main{flex:1;min-width:0}
+.comment-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.comment-who{font-size:12px;font-weight:900;color:var(--ink)}
+.comment-who.anon{color:var(--ink-soft)}
+.comment-when{font-size:10.5px;color:var(--ink-soft);font-weight:600}
+.comment-text{font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.comment-del{margin-left:auto;background:none;border:none;cursor:pointer;font-size:10.5px;font-weight:800;
+  color:var(--ink-soft);opacity:.5;padding:2px 7px;border-radius:999px;transition:.15s;flex:none}
+.comment-del:hover{opacity:1;background:color-mix(in srgb,var(--a4) 26%,#fff);color:var(--ink)}
+.comment-hint{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:8px;text-align:center}
+
+/* ---------- 剪贴报：图片墙 ---------- */
+.scrap-wall{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;margin-top:20px;
+}
+.scrap-wall:empty{display:none}
+.scrap{
+  position:relative;margin:0;border-radius:5px 12px 6px 13px;overflow:hidden;
+  border:1.5px solid rgba(184,154,114,.4);background:#fff;
+  box-shadow:0 2px 4px -2px rgba(120,96,70,.18), 0 12px 20px -14px rgba(120,96,70,.45);
+  rotate:.35deg;
+}
+.scrap:nth-child(even){rotate:-.5deg}
+.scrap img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#F4EFE6}
+.scrap-cap{
+  padding:8px 10px;font-size:12px;line-height:1.6;color:var(--ink);
+  background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,252,246,.95));
+}
+.scrap-cap:empty{display:none}
+/* 实名署名：照片右下角显示昵称 */
+.scrap-sig{
+  position:absolute;right:7px;bottom:7px;
+  font-size:11px;font-weight:900;color:#fff;padding:4px 10px;border-radius:999px;
+  background:rgba(62,58,68,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  box-shadow:0 2px 8px -3px rgba(0,0,0,.6);max-width:76%;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;pointer-events:none;
+}
+/* 匿名：右下角不显示任何东西 */
+.scrap[data-anon="1"] .scrap-sig{display:none}
+.scrap-del{
+  position:absolute;left:7px;top:7px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(62,58,68,.72);color:#fff;font-size:14px;font-weight:900;line-height:1;
+  display:grid;place-items:center;opacity:0;transition:.15s;
+}
+.scrap:hover .scrap-del{opacity:1}
+.scrap-del:hover{background:#E05A6B}
+
+/* ---------- 8. 尾部 ---------- */
+.bye{
+  text-align:center;padding:clamp(34px,7vw,64px) 20px 54px;color:var(--ink-soft)
+}
+.bye b{display:block;font-size:clamp(18px,4.6vw,24px);color:var(--ink);font-weight:900;
+  margin-bottom:6px;line-height:1.62}
+.bye b + b{margin-top:2px}
+.bye span{display:block;margin-top:16px}
+footer{padding:22px;text-align:center;font-size:12.5px;color:var(--ink-soft);border-top:1px dashed var(--rule)}
+
+/* ---------- 9. 出场动画 ---------- */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- 10. 提示气泡 ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,26px);z-index:99;
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:700;
+  opacity:0;pointer-events:none;transition:.3s;box-shadow:var(--shadow)
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- 11. 响应式 ---------- */
+@media (max-width:760px){
+  .nav{margin:10px 10px 0;padding:8px 12px;gap:8px}
+  .brand span.full{display:none}
+  .nav-links a{padding:6px 12px;font-size:13px}
+  .wrap{padding:0 14px}
+  .cover{margin:16px 0 22px;border-radius:26px}
+  .head-actions{margin-left:0;width:100%}
+  .toolbar .hint{display:none}
+  .editor-bar .tip{display:none}
+}
+/* ============================================================
+   14. 阅读模式（分页浏览 + 转场动画）
+   ============================================================ */
+body.mode-reading{overflow:hidden}
+body.mode-reading .progress,
+body.mode-reading .toolbar,
+body.mode-reading #coverPanel,
+body.mode-reading #gate,
+body.mode-reading .byeblock,
+body.mode-reading footer{display:none !important}
+body.mode-reading .wrap{max-width:1000px;padding:0 18px}
+body.mode-reading .cover{min-height:calc(100vh - 160px);margin:22px 0 0;border-radius:30px}
+body.mode-reading .chapter{
+  margin:26px auto 34px;max-width:820px;min-height:auto;
+  padding:clamp(26px,5vw,48px) clamp(22px,5vw,54px) clamp(30px,6vw,52px);
+  rotate:0deg;
+}
+body.mode-reading .chapter .paper{display:none !important}
+body.mode-reading .chapter .preview{display:block !important}
+body.mode-reading .lock-note{display:none !important}
+body.mode-reading .title-input{pointer-events:none;opacity:1;border-bottom-color:transparent}
+/* ============================================================
+   14. 阅读模式：普通切换（已移除 3D 翻页）
+   板块之间直接切换，仅新页做一次极短的淡入（只动 opacity），
+   不再有左右翻页、3D 倒伏与掠光效果。
+   ============================================================ */
+body.mode-reading.paging .chapter:not(.is-current){display:none}
+body.mode-reading.paging .cover:not(.is-current){display:none}
+
+/* 新页淡入：仅 opacity，单薄、不卡顿 */
+body.mode-reading.paging .is-current.chapter,
+body.mode-reading.paging .is-current.cover{
+  animation:pageFadeIn .22s ease-out both;
+}
+@keyframes pageFadeIn{0%{opacity:0}100%{opacity:1}}
+/* 切页不参与任何 transform */
+body.mode-reading.paging .chapter,
+body.mode-reading.paging .cover{transform:none}
+
+/* ============================================================
+   15. 封面 → 前言 接力缩放转场
+   第一拍：封面缩小至消失（0.5s）
+   第二拍：前言从中心极小点放大至正常比例（0.5s）
+   两拍严格先后，不重叠。
+   为保证顺滑，全程只动 transform 与 opacity（合成层属性），
+   不使用 blur/brightness 等会触发重绘的滤镜。
+   ============================================================ */
+
+/* 第一拍：封面在场缩小，前言仍隐藏 */
+body.mode-reading.zooming-out.paging .cover{display:block!important;z-index:2}
+body.mode-reading.zooming-out.paging .cover{
+  animation:coverZoomOut .5s cubic-bezier(.4,0,.7,.2) both!important;
+  will-change:transform,opacity;
+}
+@keyframes coverZoomOut{
+  0%  {opacity:1;transform:scale(1)}
+  55% {opacity:.72;transform:scale(.34)}
+  100%{opacity:0;transform:scale(.02)}
+}
+
+/* 第二拍：封面已退场，前言从中心一点放大 */
+body.zooming-in.paging .chapter.is-current{
+  animation:chapterZoomIn .5s cubic-bezier(.16,.84,.3,1) both!important;
+  will-change:transform,opacity;
+}
+@keyframes chapterZoomIn{
+  0%  {opacity:0;transform:scale(.02)}
+  40% {opacity:.5;transform:scale(.42)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+/* 两拍期间其余章节一律不参与，避免叠加 */
+body.zooming-out.paging .chapter,
+body.zooming-in.paging .cover{display:none!important}
+
+/* 中心亮点：只在第二拍出现，强化「从一点炸开」的观感 */
+.zoom-flash{
+  position:fixed;left:50%;top:46%;z-index:120;pointer-events:none;
+  width:14px;height:14px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(255,236,190,.5) 44%,rgba(255,255,255,0) 72%);
+  transform:translate(-50%,-50%) scale(.4);
+}
+.zoom-flash.run{animation:zoomFlash .5s ease-out both}
+@keyframes zoomFlash{
+  0%  {opacity:0;transform:translate(-50%,-50%) scale(.3)}
+  30% {opacity:.85;transform:translate(-50%,-50%) scale(3.4)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(11)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.zooming-out .cover,
+  body.mode-reading.zooming-in.paging .chapter.is-current{animation:none!important}
+  body.zooming-out .cover{opacity:0}
+  body.mode-reading.zooming-in.paging .chapter.is-current{opacity:1;transform:none}
+  .zoom-flash.run{animation:none;opacity:0}
+}
+
+/* 底部翻页控制条 */
+.rpager{
+  position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;
+  display:none;align-items:center;gap:12px;padding:9px 15px;border-radius:999px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
+}
+body.mode-reading .rpager{display:flex}
+.rpager .dots2{display:flex;gap:6px;align-items:center}
+.rpager .d2{width:9px;height:9px;border-radius:50%;background:#DCD3C6;border:none;padding:0;cursor:pointer;transition:.22s}
+.rpager .d2.on{width:24px;border-radius:999px;background:var(--a1)}
+.rpager .cnt{font-size:12px;font-weight:900;color:var(--ink-soft);min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.rp-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:999px;
+  font-size:13px;font-weight:800;border:2px solid var(--ink);background:#fff;
+  box-shadow:2px 2px 0 var(--ink);cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.rp-btn:hover:not(:disabled){background:var(--a2);transform:translateY(-1px)}
+.rp-btn:disabled{opacity:.38;cursor:not-allowed;box-shadow:2px 2px 0 var(--ink-soft)}
+.ro-close{
+  position:fixed;right:18px;bottom:78px;z-index:71;display:none;
+  padding:9px 16px;border-radius:999px;font-size:13px;font-weight:800;
+  border:2px solid var(--ink);background:var(--a1);box-shadow:3px 3px 0 var(--ink);cursor:pointer;
+}
+body.mode-reading .ro-close{display:block}
+.ro-close:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.rm-hint{
+  position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:69;
+  display:none;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:800;
+  background:#fff;border:2px dashed var(--a4);color:var(--ink);box-shadow:var(--shadow);
+  max-width:88vw;text-align:center;
+}
+body.mode-reading .rm-hint.on{display:block}
+
+@media (max-width:760px){
+  body.mode-reading .chapter{min-height:calc(100vh - 215px)}
+  .rpager{gap:8px;padding:7px 11px;bottom:14px}
+  .rp-btn{padding:6px 11px;font-size:12px}
+  .rpager .cnt{min-width:36px;font-size:11px}
+  .ro-close{bottom:70px;right:12px;padding:7px 12px;font-size:12px}
+  .rm-hint{bottom:118px;font-size:11px;padding:6px 12px}
+}
+
+/* ---------- 13. 账号 / 权限 ---------- */
+.userbar{
+  display:flex;align-items:center;gap:8px;margin-left:14px;padding-left:14px;
+  border-left:2px dashed var(--rule);flex-shrink:0;
+}
+.ubtn{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;
+  font-size:13px;font-weight:800;border:2px solid var(--ink);background:var(--paper);
+  box-shadow:2px 2px 0 var(--ink);white-space:nowrap;transition:.15s;
+}
+.ubtn:hover{background:var(--a2);transform:translateY(-1px)}
+.ubtn.solid{background:var(--a1)}
+.ubtn.ghost{border-color:var(--ink-soft);box-shadow:2px 2px 0 var(--ink-soft);color:var(--ink-soft)}
+.whoami{display:flex;align-items:center;gap:7px;padding:4px 6px 4px 12px;border-radius:999px;
+  background:#fff;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.whoami .nm{font-size:13px;font-weight:800;max-width:9ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role{
+  font-size:10.5px;font-weight:900;letter-spacing:.04em;padding:3px 8px;border-radius:999px;
+  border:1.5px solid var(--ink);white-space:nowrap;
+}
+.role.admin{background:var(--a2)}
+.role.user{background:var(--a1)}
+
+/* 未登录/无权限时的锁提示 */
+.lock-note{
+  display:none;align-items:flex-start;gap:10px;margin-top:14px;padding:12px 15px;
+  border-radius:14px;background:color-mix(in srgb,var(--a4) 14%,#fff);
+  border:2px dashed var(--a4);font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.8;
+}
+.locked .lock-note{display:flex}
+.locked .paper,.locked .title-input{opacity:.72}
+.locked .title-input{pointer-events:none}
+.owner-tag{
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--a3) 20%,#fff);
+  border:1.5px solid var(--a3);color:var(--ink);
+}
+.owner-tag.mine{background:color-mix(in srgb,var(--a1) 26%,#fff);border-color:var(--a1)}
+.chapter.reading .lock-note{display:none!important}
+
+/* 弹窗 */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.modal .mask{position:absolute;inset:0;background:rgba(62,58,68,.42);backdrop-filter:blur(4px)}
+/* 登录弹窗：叠放在注册弹窗之上（z-index 更高 + 更轻遮罩 + 更强投影，视觉上明确"在上层"） */
+.modal-top{z-index:101}
+.modal-top .mask{background:rgba(62,58,68,.20);backdrop-filter:blur(1.5px)}
+.modal-top .modal-card{
+  box-shadow:0 0 0 5px rgba(255,255,255,.55), 12px 12px 0 var(--ink);
+  animation:popOver .22s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes popOver{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.modal-card{
+  position:relative;width:100%;max-width:430px;background:var(--paper);border-radius:24px;
+  border:2px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:26px;max-height:88vh;overflow:auto;
+}
+.modal-card h3{margin:0 0 6px;font-size:22px;font-weight:900}
+.modal-card .sub{margin:0 0 18px;font-size:13px;color:var(--ink-soft);font-weight:600;line-height:1.8}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:var(--ink-soft)}
+.field input{width:100%;padding:11px 14px;border:2px solid var(--rule);border-radius:12px;
+  background:#fff;font-size:14.5px;outline:none}
+.field input:focus{border-color:var(--a1)}
+.modal-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.modal-err{display:none;margin:0 0 12px;padding:10px 13px;border-radius:11px;font-size:12.5px;
+  font-weight:700;background:color-mix(in srgb,#E8544F 12%,#fff);border:1.5px solid #E8544F;color:#B33}
+.modal-err.on{display:block}
+.switch-line{margin-top:14px;font-size:12.5px;font-weight:700;color:var(--ink-soft);text-align:center}
+.link-btn{color:var(--a3);font-weight:900;text-decoration:underline;background:none;padding:0}
+.firstrun{
+  margin:0 0 16px;padding:13px 15px;border-radius:14px;font-size:12.5px;font-weight:800;line-height:1.85;
+  background:color-mix(in srgb,var(--a2) 30%,#fff);border:2px solid var(--ink);
+}
+.admin-lock-note{
+  margin:0 0 16px;padding:12px 14px;border-radius:13px;font-size:12px;font-weight:700;line-height:1.8;
+  background:#F1EDE6;border:1.5px dashed var(--ink-soft);color:var(--ink-soft);
+}
+
+/* 管理员面板 */
+.ap-list{display:grid;gap:9px;margin:14px 0}
+.ap-item{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:13px;
+  background:#fff;border:2px solid var(--rule);font-size:13.5px;font-weight:700;flex-wrap:wrap}
+.ap-item .nm{font-weight:900;max-width:12ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ap-item .tm{margin-left:auto;font-size:11px;color:var(--ink-soft);font-weight:700}
+.ap-sec-t{font-size:12px;font-weight:900;letter-spacing:.1em;color:var(--ink-soft);margin:20px 0 8px}
+
+/* 匿名开关 */
+.anon-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;
+  font-size:12px;font-weight:800;border:2px solid var(--ink-soft);background:transparent;
+  color:var(--ink-soft);box-shadow:2px 2px 0 var(--ink-soft);white-space:nowrap;transition:.15s;
+}
+.anon-btn:hover{transform:translateY(-1px)}
+.anon-btn.on{border-color:var(--ink);background:var(--a4);color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.anon-btn .dotm{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.55}
+.anon-btn.on .dotm{opacity:1}
+
+/* 注册弹窗里的匿名勾选 */
+.anon-check{
+  display:flex;align-items:flex-start;gap:10px;margin:2px 0 16px;padding:12px 14px;cursor:pointer;
+  border-radius:14px;background:color-mix(in srgb,var(--a4) 10%,#fff);border:2px dashed var(--a4);
+  transition:.15s;
+}
+.anon-check:hover{background:color-mix(in srgb,var(--a4) 18%,#fff)}
+.anon-check input{margin-top:3px;width:17px;height:17px;accent-color:var(--a1);cursor:pointer;flex-shrink:0}
+.anon-check span{font-size:12.5px;font-weight:700;line-height:1.8}
+.anon-check b{font-weight:900;font-size:13.5px}
+.anon-check i{font-style:normal;color:var(--ink-soft);font-size:11.5px}
+
+/* 上传前置提示条 */
+.gate{
+  display:none;align-items:center;gap:11px;flex-wrap:wrap;margin:0 0 22px;padding:14px 18px;
+  border-radius:18px;background:#fff;border:2px dashed var(--a4);box-shadow:var(--shadow);
+  font-size:13.5px;font-weight:700;line-height:1.8;
+}
+.gate.on{display:flex}
+.gate b{font-weight:900}
+.gate .g-act{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* 锁提示里的匿名措辞 */
+.lock-note.anon{border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,#fff)}
+
+/* 管理员面板：管理员视角的匿名标记 */
+.ap-item .anonflag{font-size:10.5px;font-weight:900;padding:2px 7px;border-radius:999px;
+  background:var(--a4);border:1.5px solid var(--ink)}
+
+/* ---------- 14. 响应式（账号相关） ---------- */
+@media (max-width:760px){
+  .userbar{margin-left:auto;padding-left:0;border-left:none;flex-wrap:wrap;justify-content:flex-end}
+  .whoami .nm{max-width:6ch}
+  .ubtn{padding:6px 10px;font-size:12px}
+  .anon-btn{padding:5px 9px;font-size:11px}
+  .gate .g-act{margin-left:0;width:100%}
+}
+@media print{
+  .userbar,.modal,.lock-note,.owner-tag{display:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+/* ---------- 12. 打印 ---------- */
+@media print{
+  .nav,.progress,.toolbar,.scroll-cue,.bg-deco,.grain,#toast,.mini{display:none!important}
+  body{background:#fff}
+  .cover{min-height:auto;box-shadow:none;border-radius:0;page-break-after:always}
+  .chapter{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid;margin-bottom:12px}
+  .chapter::before{display:none}
+  .paper{border-color:#eee}
+}
+</style>
+</head>
+<body class="theme-youth">
+
+<div class="bg-deco" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+<nav class="nav">
+  <div class="brand"><span class="dot" aria-hidden="true"></span><span class="full">我们的：</span></div>
+  <div class="nav-links">
+    <a href="#cover">封面</a>
+    <a href="#preface">前言</a>
+    <a href="#guestbook">留言板</a>
+    <a href="#memoir">回忆录</a>
+    <a href="#scrapbook">剪贴报</a>
+    <a href="#confession">表白墙</a>
+    <a href="#diary">日记本</a>
+    <a href="#forum">小论坛</a>
+    <a href="#epilogue">小纸条</a>
+  </div>
+  <div class="userbar" id="userbar">
+    <button class="ubtn solid" id="btnAuthOpen">👤 注册 / 登录</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ========== 封面 ========== -->
+  <header class="cover" id="cover">
+    <div class="cover-slides" id="coverSlides"></div>
+    <!-- 弹幕层：显示于封面图片上方，垂直方向仅占封面上方 1/3 -->
+    <div class="danmaku-layer" id="danmakuLayer"></div>
+    <div class="cover-dots" id="coverDots"></div>
+    <div class="scroll-cue"><span>SCROLL</span><i></i></div>
+    <div class="cover-in">
+      <p class="eyebrow">OUR MEMOIR</p>
+      <h1 id="coverTitleView">好久不见，奥校的你</h1>
+      <p class="sub" id="coverSubView">谨以此，纪念我们的青春</p>
+    </div>
+  </header>
+
+  <!-- ========== 弹幕发送（封面外下方） ========== -->
+  <div class="danmaku-send">
+    <div class="ds-head">
+      <span class="ds-title">💬 匿名弹幕</span>
+      <span class="ds-count" id="danmakuCount">0 条</span>
+    </div>
+    <div class="ds-row">
+      <input class="ds-input" id="danmakuInput" placeholder="留下一句想说的话，会匿名飘过封面…" maxlength="40">
+      <button class="btn p1 sm" id="danmakuSend">发送弹幕</button>
+    </div>
+    <div class="ds-tip">· 弹幕<b>匿名</b>发送，任何人都能看到，但不会显示是谁发的<br>
+      · 弹幕在封面上方飘过，不遮挡主标题与副标题；最多保留 <b>100 条</b>，超出后自动移出最早的一条</div>
+  </div>
+
+  <!-- ========== 工具条 ========== -->
+  <div class="toolbar">
+    <button class="btn p1" id="btnCover">🖼 封面配图</button>
+    <button class="btn p2" id="btnTheme">🎨 换配色</button>
+    <button class="btn p3" id="btnReadMode">📖 阅读模式</button>
+    <button class="btn ghost" id="btnMd">⬇ 导出 Markdown</button>
+    <button class="btn ghost" id="btnPrint">🖨 打印 / PDF</button>
+    <span class="hint">✦ 内容自动保存在本机浏览器</span>
+  </div>
+
+  <!-- 上传前置：必须注册 -->
+  <div class="gate" id="gate"></div>
+
+  <!-- 封面设置面板 -->
+  <div class="chapter" id="coverPanel" style="display:none">
+    <div class="chapter-head">
+      <span class="no">封面设置</span>
+      <input class="title-input" id="coverTitle" placeholder="封面主标题（可编辑）" maxlength="30">
+    </div>
+    <div class="paper">
+      <div style="padding:12px 2px 4px;display:grid;gap:12px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <textarea id="coverUrl" rows="2" placeholder="粘贴外部图片链接，每行一个（支持多张）" style="flex:1;min-width:220px;padding:11px 14px;border:2px solid var(--rule);border-radius:14px;background:#fff;outline:none;font-size:14px;line-height:1.65;resize:vertical;font-family:inherit;min-height:0;background-image:none;box-shadow:none"></textarea>
+          <label class="btn p2" style="cursor:pointer">📁 本地上传（可多选）<input type="file" id="coverFile" accept="image/*" multiple hidden></label>
+          <button class="btn ghost" id="btnClearCover">清空全部配图</button>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink-soft);font-weight:600;line-height:1.9">
+          · 支持外链图片（建议 https 直链），链接框里<b>一行一个</b>可填多张<br>
+          · 也可一次多选本地图片，自动转为内嵌数据保存<br>
+          · 上传多张时，封面每 <b>2 秒</b>自动循环切换一张，带淡入淡出与轻微推近<br>
+          · 点击封面下方圆点可手动跳到指定的一张<br>
+          · 未设置配图时，封面使用青春渐变色
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 前言 ========== -->
+  <section class="chapter reveal" id="preface">
+    <div class="chapter-head">
+      <span class="no">01 / 前言</span>
+      <input class="title-input" data-title="preface" placeholder="写给翻开这本册子的人" maxlength="40" data-lock="admin">
+      <div class="head-actions"><span class="admin-only-tag" data-admintag="preface">🔒 仅管理员可编辑</span><button class="mini" data-toggle="preface">预览</button></div>
+    </div>
+    <div class="paper">
+      <textarea data-body="preface" data-lock="admin" placeholder="亲爱的读者：&#10;&#10;那年的蝉鸣很吵，风扇转得吱呀作响，我们却觉得那就是全世界最好听的背景音乐。写在这里，是因为怕忘记——怕忘记下课铃响时冲向后门的奔跑，怕忘记课桌上用铅笔刻下的那句悄悄话，怕忘记毕业照上大家笑得歪歪扭扭的样子。&#10;&#10;愿你翻到这一页时，也能想起那个会因为一场球赛输掉而难过一整周的少年。"></textarea>
+    </div>
+    <div class="preview" data-preview="preface"></div>
+    <div class="editor-bar">
+      <span class="count" data-count="preface">0 字</span>
+      <span class="tip">小提示：本板块仅管理员可编辑，内容支持换行分段，导出时会保留格式</span>
+    </div>
+    <div class="chips"><span class="chip">📮 写信给自己</span><span class="chip">⏳ 那年夏天</span><span class="chip">🚌 放学路上</span></div>
+  </section>
+
+  <!-- ========== 02 留言板 ========== -->
+  <section class="chapter reveal" id="guestbook">
+    <div class="chapter-head">
+      <span class="no">02 / 留言板</span>
+      <input class="title-input" data-title="guestbook" placeholder="给这本册子留一句话" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="guestbook">0 条</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="guestbook" placeholder="写给母校、老师或同学的只言片语" maxlength="60">
+      <span class="note-badge locked" data-notebadge="guestbook">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="guestbook">
+        <textarea data-post="guestbook" rows="3" placeholder="写点什么吧……（登录后即可留言）"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="gbAnon">
+            <input type="checkbox" id="gbAnon" data-postanon="guestbook">
+            <span>匿名发布</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="guestbook">发布留言</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="guestbook"></div>
+    <div class="chips"><span class="chip">📮 一句话</span><span class="chip">💬 悄悄话</span><span class="chip">✨ 祝福</span></div>
+  </section>
+
+  <!-- ========== 03 回忆录 ========== -->
+  <section class="chapter reveal" id="memoir">
+    <div class="chapter-head">
+      <span class="no">03 / 回忆录</span>
+      <input class="title-input" data-title="memoir" placeholder="那些年，我们一起经历过的" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="memoir">0 篇</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="memoir" placeholder="那些年，我们一起经历过的" maxlength="60">
+      <span class="note-badge locked" data-notebadge="memoir">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="memoir">
+        <textarea data-post="memoir" rows="4" placeholder="记下一段属于你们的回忆……"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="mrAnon">
+            <input type="checkbox" id="mrAnon" data-postanon="memoir">
+            <span>匿名发布</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="memoir">发布回忆</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="memoir"></div>
+    <div class="chips"><span class="chip">🏃 运动会</span><span class="chip">📚 晚自习</span><span class="chip">🍜 食堂抢饭</span></div>
+  </section>
+
+  <!-- ========== 04 剪贴报（图片墙，所有人可上传） ========== -->
+  <section class="chapter reveal" id="scrapbook">
+    <div class="chapter-head">
+      <span class="no">04 / 剪贴报</span>
+      <input class="title-input" data-title="scrapbook" placeholder="老照片、门票、纸条…都贴上来" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="scrapbook">0 张</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="scrapbook" placeholder="老照片、门票、纸条…都贴上来" maxlength="60">
+      <span class="note-badge locked" data-notebadge="scrapbook">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="scrapbook">
+        <div class="up-row">
+          <label class="btn p2 up-btn">📁 选择图片（可多选）<input type="file" id="scrapFile" accept="image/*" multiple hidden></label>
+          <button class="btn ghost" id="scrapClear">清空全部图片</button>
+        </div>
+        <textarea data-post="scrapbook" rows="2" placeholder="给这张图片写一句话说明（可留空）"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="sbAnon">
+            <input type="checkbox" id="sbAnon" data-postanon="scrapbook">
+            <span>匿名上传（照片不显示昵称）</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="scrapbook">📤 上传图片</button>
+        </div>
+        <div class="up-note">· 所有同学上传的图片会同时展现在下方图片墙<br>· 实名上传的照片右下角会显示你的昵称；匿名上传则不显示任何署名</div>
+      </div>
+    </div>
+    <div class="scrap-wall" data-feed="scrapbook"></div>
+    <div class="chips"><span class="chip">📷 老照片</span><span class="chip">🎟 门票根</span><span class="chip">📝 试卷</span></div>
+  </section>
+
+  <!-- ========== 05 表白墙 ========== -->
+  <section class="chapter reveal" id="confession">
+    <div class="chapter-head">
+      <span class="no">05 / 表白墙</span>
+      <input class="title-input" data-title="confession" placeholder="说不出口的话，写在这里" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="confession">0 条</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="confession" placeholder="说不出口的话，写在这里" maxlength="60">
+      <span class="note-badge locked" data-notebadge="confession">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="confession">
+        <textarea data-post="confession" rows="3" placeholder="有些话当面说不出口……"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="cfAnon">
+            <input type="checkbox" id="cfAnon" data-postanon="confession">
+            <span>匿名发布</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="confession">贴上墙</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="confession"></div>
+    <div class="chips"><span class="chip">💗 心事</span><span class="chip">🌙 深夜电台</span><span class="chip">🎈 悄悄话</span></div>
+  </section>
+
+  <!-- ========== 06 日记本 ========== -->
+  <section class="chapter reveal" id="diary">
+    <div class="chapter-head">
+      <span class="no">06 / 日记本</span>
+      <input class="title-input" data-title="diary" placeholder="那年今日，你在做什么" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="diary">0 篇</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="diary" placeholder="那年今日，你在做什么" maxlength="60">
+      <span class="note-badge locked" data-notebadge="diary">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="diary">
+        <textarea data-post="diary" rows="4" placeholder="写下今天的日记……"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="diAnon">
+            <input type="checkbox" id="diAnon" data-postanon="diary">
+            <span>匿名发布</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="diary">存入日记本</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="diary"></div>
+    <div class="chips"><span class="chip">📔 日记</span><span class="chip">🌤 天气</span><span class="chip">🎧 歌单</span></div>
+  </section>
+
+  <!-- ========== 07 小论坛 ========== -->
+  <section class="chapter reveal" id="forum">
+    <div class="chapter-head">
+      <span class="no">07 / 小论坛</span>
+      <input class="title-input" data-title="forum" placeholder="随便聊聊，都行" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="forum">0 帖</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="forum" placeholder="随便聊聊，都行" maxlength="60">
+      <span class="note-badge locked" data-notebadge="forum">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="forum">
+        <input class="topic-input" data-posttitle="forum" placeholder="标题：你最想聊的话题" maxlength="40">
+        <textarea data-post="forum" rows="3" placeholder="内容…"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="foAnon">
+            <input type="checkbox" id="foAnon" data-postanon="forum">
+            <span>匿名发帖</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="forum">发帖</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="forum"></div>
+    <div class="chips"><span class="chip">💭 闲聊</span><span class="chip">❓ 提问</span><span class="chip">📢 找同学</span></div>
+  </section>
+
+  <!-- ========== 08 小纸条（多人投稿） ========== -->
+  <section class="chapter reveal" id="epilogue">
+    <div class="chapter-head">
+      <span class="no">08 / 小纸条</span>
+      <input class="title-input" data-title="epilogue" placeholder="后来我们都去了远方" maxlength="40">
+      <div class="head-actions"><span class="feed-count" data-feedcount="epilogue">0 张</span></div>
+    </div>
+
+    <div class="note-row">
+      <input class="note-input" data-note="epilogue" placeholder="后来我们都去了远方" maxlength="60">
+      <span class="note-badge locked" data-notebadge="epilogue">仅管理员可编辑</span>
+    </div>
+    <div class="paper">
+      <div class="composer" data-composer="epilogue">
+        <textarea data-post="epilogue" rows="4" placeholder="给未来留一张小纸条吧……写完这本册子就完整啦"></textarea>
+        <div class="composer-bar">
+          <label class="mini anon-toggle" for="epAnon">
+            <input type="checkbox" id="epAnon" data-postanon="epilogue">
+            <span>匿名投递</span>
+          </label>
+          <button class="btn p1 sm" data-postsend="epilogue">投入盒子</button>
+        </div>
+      </div>
+    </div>
+    <div class="feed" data-feed="epilogue"></div>
+    <div class="chips"><span class="chip">🎓 毕业照</span><span class="chip">✉️ 老同学</span><span class="chip">🌱 各自生长</span></div>
+  </section>
+
+  <div class="bye byeblock reveal">
+    <b>若偶遇困难，愿你能在这里找到当初前行的勇气，重新出发；</b>
+    <b>若一切顺心，则愿你带着无限的祝福坚定走下去。</b>
+    <span>未来，我们再见</span>
+  </div>
+</div>
+
+<!-- ========== 注册 / 登录 弹窗 ========== -->
+<div class="modal" id="authModal">
+  <div class="mask" data-close></div>
+  <div class="modal-card">
+    <h3 id="authTitle">注册成为第一位管理员</h3>
+    <p class="sub" id="authSub">本站采用「首位注册者即为管理员」的规则。</p>
+    <div id="firstrunBox">
+      <div class="firstrun">
+        ⚠️ 你将是<b>第一位注册者</b>，点击注册后即成为本站<b>管理员</b>，
+        拥有全部内容的编辑权。此后管理员<b>永久锁定</b>，不可转让、不可更换、不可删除。
+      </div>
+    </div>
+    <div class="modal-err" id="authErr"></div>
+    <div class="field">
+      <label for="authName">昵称</label>
+      <input id="authName" placeholder="给自己起个名字" maxlength="16" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="authPwd">密码</label>
+      <input id="authPwd" type="password" placeholder="至少 4 位" maxlength="32" autocomplete="current-password">
+    </div>
+    <label class="anon-check" for="authAnon">
+      <input type="checkbox" id="authAnon">
+      <span><b>以匿名身份上传</b><br>
+      <i>开启后，你的内容统一署名「匿名同学」，他人与管理员均看不到你的昵称。之后可在导航栏随时切换。</i></span>
+    </label>
+    <div class="modal-btns">
+      <button class="btn p1" id="btnAuthSubmit">注册并成为管理员</button>
+      <button class="btn ghost" id="btnAuthLater">先逛逛，稍后再说</button>
+    </div>
+    <div class="switch-line" id="authSwitchLine">
+      已有账号？<button class="link-btn" id="btnToLogin">去登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 登录弹窗（叠在注册弹窗之上） ========== -->
+<div class="modal modal-top" id="loginModal">
+  <div class="mask" data-close></div>
+  <div class="modal-card">
+    <h3>登录</h3>
+    <p class="sub" id="loginSub">欢迎回来，登录后可继续上传属于你的回忆。</p>
+    <div class="modal-err" id="loginErr"></div>
+    <div class="field">
+      <label for="loginName">昵称</label>
+      <input id="loginName" placeholder="已注册的昵称" maxlength="16" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="loginPwd">密码</label>
+      <input id="loginPwd" type="password" placeholder="请输入密码" maxlength="32" autocomplete="current-password">
+    </div>
+    <div class="modal-btns">
+      <button class="btn p1" id="btnLoginSubmit">登录</button>
+      <button class="btn ghost" id="btnLoginBack">返回注册</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 管理员面板 ========== -->
+<div class="modal" id="adminModal">
+  <div class="mask" data-close></div>
+  <div class="modal-card">
+    <h3>管理员面板</h3>
+    <p class="sub">你可以编辑全站所有内容，并管理其他注册用户。</p>
+    <div class="admin-lock-note" id="adminLockBox">
+      🔒 管理员身份已锁定：由首位注册者产生，不可转让、更换或删除。<br>
+      🔒 本名单<b>仅管理员可见</b>；普通用户在站内无法看到任何其他用户，也无法得知管理员是谁。
+    </div>
+    <div class="ap-sec-t">本站注册用户名单（仅管理员可见）</div>
+    <div class="ap-list" id="apUsers"></div>
+    <div class="modal-btns">
+      <button class="btn p2" id="btnAdminClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 阅读模式：封面 → 前言 接力缩放中心亮点 ========== -->
+<div class="zoom-flash" id="zoomFlash" aria-hidden="true"></div>
+
+<!-- ========== 阅读模式：底部切页控制条 ========== -->
+<button class="ro-close" id="btnReadModeOff">✕ 退出阅读</button>
+<div class="rm-hint" id="rmHint"></div>
+<div class="rpager" id="rpager">
+  <button class="rp-btn" id="btnPrev">← 上一页</button>
+  <div class="dots2" id="rpDots"></div>
+  <span class="cnt" id="rpCnt">1 / 4</span>
+  <button class="rp-btn" id="btnNext">下一页 →</button>
+</div>
+
+<footer>本页所有内容仅保存在你自己的浏览器中 · 中学回忆录 Single-file Edition</footer>
+<div id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "ms-memoir-v3-youth";
+  var UKEY = "ms-memoir-users-v1";
+  var $  = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+
+  /* ---------- 账号体系 ----------
+     规则：
+       · 首位点击注册的人 = 管理员，产生后永久锁定，不可转让/更换/删除
+       · 每位用户有独立密码（本地哈希），可注册多账号
+       · 除封面外，所有板块标题仅管理员可编辑
+       · 前言：仅管理员可编辑，归属权已清空（不再由任何个人认领挂名）
+       · 除封面、前言外的板块另有「备注」一行（标题下方），同样仅管理员可编辑
+       · 留言板 / 回忆录 / 剪贴报 / 表白墙 / 日记本 / 小论坛 / 小纸条：多人共同投稿，
+         每条内容各自记录作者与匿名标记，仅作者本人或管理员可删除
+       · 剪贴板任何注册用户都可上传图片，所有图片同时展出；
+         实名上传的照片右下角显示昵称，匿名上传不显示任何署名
+       · 管理员可编辑全部板块
+  ------------------------------------------------ */
+  var SECTIONS = ["preface","guestbook","memoir","scrapbook","confession","diary","forum","epilogue"];
+  var SECT_NAME = {
+    preface:"前言", guestbook:"留言板", memoir:"回忆录", scrapbook:"剪贴报",
+    confession:"表白墙", diary:"日记本", forum:"小论坛", epilogue:"小纸条",
+    cover:"封面配图与信息"
+  };
+  // 仅管理员可编辑的内容块
+  var ADMIN_ONLY = ["preface"];
+  // 多人共同投稿的板块：每条内容各自记录作者，无需整块认领
+  var SHARED_UNITS = ["guestbook","memoir","scrapbook","confession","diary","forum","epilogue"];
+  // 提交按钮要显示的量词
+  var FEED_UNIT = { guestbook:"条", memoir:"篇", scrapbook:"张", confession:"条", diary:"篇", forum:"帖", epilogue:"张" };
+
+  function hash(str){
+    var h = 5381, s = "#m$" + String(str);
+    for(var i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+    return h.toString(36);
+  }
+  function loadUsers(){
+    try{ return JSON.parse(localStorage.getItem(UKEY)) || { users:[], adminId:null, adminLocked:false }; }
+    catch(e){ return { users:[], adminId:null, adminLocked:false }; }
+  }
+  function saveUsers(u){
+    try{ localStorage.setItem(UKEY, JSON.stringify(u)); }catch(e){ toast("⚠️ 用户数据保存失败"); }
+  }
+
+  var db = loadUsers();
+  var session = null;      // 当前登录用户对象
+  try{ session = JSON.parse(sessionStorage.getItem("ms-memoir-session")) || null; }catch(e){}
+  // 会话有效性校验：用户必须仍存在
+  if(session && !db.users.some(function(u){ return u.id === session.id; })) session = null;
+
+  function isAdmin(){ return !!(session && session.role === "admin"); }
+  function me(){ return session; }
+
+  function ownerOf(unit){
+    if(!state.owners) state.owners = {};
+    return state.owners[unit] || null;
+  }
+  // 能否编辑某个内容块
+  function canEdit(unit){
+    if(!session) return false;                 // 未注册：只读（上传前必须注册）
+    if(isAdmin()) return true;                 // 管理员：全部
+    if(ADMIN_ONLY.indexOf(unit) >= 0) return false;  // 仅管理员可编辑的内容块
+    // 以下板块为「多人共同投稿」，任何注册用户都可投稿，无需认领归属
+    if(SHARED_UNITS.indexOf(unit) >= 0) return true;
+    var o = ownerOf(unit);
+    if(!o) return true;                        // 尚无归属：任何人可首次认领
+    return o === session.id;                   // 已归属：仅所有者
+  }
+
+  function claim(unit){
+    if(!session || isAdmin()) return;
+    if(ADMIN_ONLY.indexOf(unit) >= 0) return;       // 仅管理员可编辑，不参与认领
+    if(SHARED_UNITS.indexOf(unit) >= 0) return;     // 多人投稿板块不认领整块
+    if(!state.owners) state.owners = {};
+    if(!state.owners[unit]){ state.owners[unit] = session.id; saveSoon(); }
+  }
+  function release(unit){
+    if(isAdmin()){ delete (state.owners||{})[unit]; saveSoon(); }
+  }
+
+  /* ============================================================
+   账号 / 权限 UI
+   ============================================================ */
+  var authModal = $("#authModal"), adminModal = $("#adminModal");
+  var hasAdmin = function(){ return !!db.adminId; };
+  var adminUser = function(){ return db.users.filter(function(u){ return u.id === db.adminId; })[0] || null; };
+
+  /* ---------- 身份显示：隐私规则 ----------
+     1. 任何人都不向普通用户暴露他人真实昵称
+     2. 只有管理员能在管理面板看到完整名单
+     3. 上传者可选择匿名；匿名后对所有人（含管理员的公开视图）都只显示代号
+     4. 普通用户连「管理员是谁」都不应知道 —— 不显示管理员身份标识
+  ------------------------------------------------ */
+  var ANON_LABEL = "匿名同学";
+  function findUser(id){
+    return db.users.filter(function(u){ return u.id === id; })[0] || null;
+  }
+  function isAnon(id){
+    var u = findUser(id);
+    return !!(u && u.anon);
+  }
+  // 面向普通用户的安全显示名：他人一律匿名化
+  function publicName(id){
+    if(!id) return "未署名";
+    var u = findUser(id);
+    if(!u) return "已注销用户";
+    if(isAdmin()){
+      // 管理员看得到全貌，但若对方选择匿名，仍以匿名呈现（除非是管理员本人）
+      if(u.anon && u.id !== db.adminId) return ANON_LABEL;
+      return u.name;
+    }
+    // 普通用户：只看得到自己；他人一律匿名
+    if(session && id === session.id) return u.name;
+    if(u.anon) return ANON_LABEL;
+    return "某位同学";
+  }
+  // 仅管理员内部使用（管理面板）
+  function realName(id){ var u = findUser(id); return u ? u.name : "（已注销）"; }
+
+  function authErr(msg){
+    var e = $("#authErr");
+    if(!msg){ e.classList.remove("on"); e.textContent = ""; return; }
+    e.textContent = msg; e.classList.add("on");
+  }
+  function wantAnon(){
+    var c = document.getElementById("authAnon");
+    return !!(c && c.checked);
+  }
+
+  function openAuth(){
+    var first = !hasAdmin();
+    authErr("");
+    $("#authName").value = ""; $("#authPwd").value = "";
+    var ac = document.getElementById("authAnon");
+    if(ac) ac.checked = false;
+    // 首个账号 = 管理员；之后注册的均为普通用户
+    $("#firstrunBox").style.display = first ? "block" : "none";
+    $("#authTitle").textContent = first ? "注册成为第一位管理员" : "注册新账号";
+    $("#authSub").textContent = first
+      ? "本站采用「首位注册者即为管理员」的规则。"
+      : "管理员已锁定，本次注册的用户可上传并编辑属于自己的内容。";
+    $("#btnAuthSubmit").textContent = first ? "注册并成为管理员" : "注册";
+    $("#authSwitchLine").innerHTML =
+      '已有账号？<button class="link-btn" id="btnToLogin">去登录</button>';
+    // 「去登录」：在注册弹窗之上叠开登录弹窗（而非关闭注册窗另开）
+    $("#btnToLogin").addEventListener("click", openLogin);
+    authModal.classList.add("on");
+    setTimeout(function(){ $("#authName").focus(); }, 60);
+  }
+  function closeAuth(){ authModal.classList.remove("on"); closeLogin(); }
+
+  /* 登录弹窗：z-index(101) 高于注册弹窗(100)，显示在注册页面之上 */
+  var loginModal = $("#loginModal");
+  function loginErr(msg){
+    var e = $("#loginErr");
+    if(!msg){ e.classList.remove("on"); e.textContent = ""; return; }
+    e.textContent = msg; e.classList.add("on");
+  }
+  function openLogin(){
+    loginErr("");
+    $("#loginName").value = ""; $("#loginPwd").value = "";
+    loginModal.classList.add("on");
+    setTimeout(function(){ $("#loginName").focus(); }, 60);
+  }
+  function closeLogin(){ loginModal.classList.remove("on"); }
+
+  function doLogin(){
+    var lname = $("#loginName").value.trim();
+    var lpwd  = $("#loginPwd").value;
+    loginErr("");
+    if(!lname) return loginErr("请填写昵称");
+    if(!lpwd)  return loginErr("请填写密码");
+
+    var u = db.users.filter(function(x){ return x.name === lname; })[0];
+    if(!u) return loginErr("该昵称尚未注册，请先注册账号");
+    if(u.pwd !== hash(lpwd)) return loginErr("密码不正确");
+
+    session = { id: u.id, name: u.name, role: u.role };
+    try{ sessionStorage.setItem("ms-memoir-session", JSON.stringify(session)); }catch(e){}
+    closeLogin(); closeAuth();
+    if(document.body.classList.contains("auto-read")){ exitReading(); document.body.classList.remove("auto-read"); }
+    renderAll();
+    toast("👋 欢迎回来，" + lname + (isAdmin() ? "（管理员）" : ""));
+  }
+
+  $("#btnLoginSubmit").addEventListener("click", doLogin);
+  $("#loginName").addEventListener("keydown", function(e){ if(e.key === "Enter"){ $("#loginPwd").focus(); } });
+  $("#loginPwd").addEventListener("keydown", function(e){ if(e.key === "Enter"){ doLogin(); } });
+  $("#btnLoginBack").addEventListener("click", function(){
+    closeLogin();
+    setTimeout(function(){ $("#authName").focus(); }, 60);
+  });
+  function openAdmin(){
+    if(!isAdmin()){ toast("🔒 用户名单仅管理员可见"); return; }
+    renderAdmin(); adminModal.classList.add("on");
+  }
+  function closeAdmin(){ adminModal.classList.remove("on"); }
+
+  // 注册（已注册的昵称会引导至上层登录窗）
+  $("#btnAuthSubmit").addEventListener("click", function(){
+    var name = $("#authName").value.trim();
+    var pwd  = $("#authPwd").value;
+    authErr("");
+    if(!name) return authErr("请填写昵称");
+
+    var exists = db.users.filter(function(u){ return u.name === name; })[0];
+    if(exists){
+      // 该昵称已存在 → 在注册弹窗之上叠开登录窗，并自动带入昵称
+      openLogin();
+      $("#loginName").value = name;
+      $("#loginPwd").value = "";
+      setTimeout(function(){ $("#loginPwd").focus(); }, 80);
+      return;
+    }
+
+    if(pwd.length < 4) return authErr("密码至少 4 位");
+
+    // 注册
+    var first = !hasAdmin();
+    var u = {
+      id: "u" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36),
+      name: name, pwd: hash(pwd),
+      role: first ? "admin" : "user",
+      anon: !!wantAnon(),          // 注册时即可选择是否匿名发布
+      ts: Date.now()
+    };
+    db.users.push(u);
+    if(first){ db.adminId = u.id; db.adminLocked = true; }   // 管理员一旦产生即锁定
+    saveUsers(db);
+    session = { id: u.id, name: u.name, role: u.role };
+    try{ sessionStorage.setItem("ms-memoir-session", JSON.stringify(session)); }catch(e){}
+    closeAuth();
+    if(document.body.classList.contains("auto-read")){ exitReading(); document.body.classList.remove("auto-read"); }
+    renderAll();
+    if(first) toast("🔑 你已成为管理员（身份已锁定）");
+    else toast(u.anon ? "🎉 注册成功，你将以匿名身份上传" : "🎉 注册成功，欢迎上传你的回忆");
+  });
+
+  $("#btnAuthLater").addEventListener("click", function(){
+    closeAuth(); renderAll();
+    if(!session){ if(!readingMode) enterReading(); document.body.classList.add("auto-read"); toast("未注册用户仅可使用阅读模式") ; }
+  });
+  // 遮罩点击关闭：登录窗关闭时保留注册窗在下方
+  $("#loginModal").addEventListener("click", function(e){
+    if(e.target.closest("[data-close]")) closeLogin();
+  });
+  [$("#authModal"), $("#adminModal")].forEach(function(m){
+    m.addEventListener("click", function(e){
+      if(e.target.closest("[data-close]")) m.classList.remove("on");
+    });
+  });
+  $("#btnAdminClose").addEventListener("click", closeAdmin);
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      if(loginModal.classList.contains("on")) closeLogin();  // 优先关上层
+      else { closeAuth(); closeAdmin(); }
+    }
+  });
+
+  function logout(){
+    session = null;
+    try{ sessionStorage.removeItem("ms-memoir-session"); }catch(e){}
+    // 退出后未注册 → 自动回到阅读模式
+    if(!readingMode) enterReading();
+    document.body.classList.add("auto-read");
+    renderAll(); toast("已退出登录，当前为阅读模式");
+  }
+
+  function renderUserBar(){
+    var bar = $("#userbar");
+    if(!session){
+      bar.innerHTML = '<button class="ubtn solid" id="btnAuthOpen">👤 注册 / 登录</button>';
+      $("#btnAuthOpen").addEventListener("click", openAuth);
+      return;
+    }
+    var admin = isAdmin();
+    var me = findUser(session.id);
+    var anon = me && me.anon;
+    bar.innerHTML =
+      '<div class="whoami"><span class="nm">' + escapeHtml(session.name) + '</span>' +
+      '<span class="role ' + (admin ? "admin" : "user") + '">' + (admin ? "管理员" : "上传者") + '</span></div>' +
+      // 匿名开关：上传者可随时切换是否以匿名身份发布
+      '<button class="anon-btn' + (anon ? " on" : "") + '" id="btnAnon" title="开启后，你上传的内容将以「' + ANON_LABEL + '」署名">' +
+      '<span class="dotm"></span>' + (anon ? "匿名中" : "实名") + '</button>' +
+      (admin ? '<button class="ubtn p2" id="btnAdminOpen">🛡 管理</button>' : "") +
+      '<button class="ubtn ghost" id="btnLogout">退出</button>';
+    var ab = $("#btnAnon");
+    if(ab) ab.addEventListener("click", toggleAnon);
+    var ao = $("#btnAdminOpen"); if(ao) ao.addEventListener("click", openAdmin);
+    $("#btnLogout").addEventListener("click", logout);
+  }
+
+  // 切换匿名状态（仅影响署名的显示方式，不影响编辑权限）
+  function toggleAnon(){
+    var me = findUser(session && session.id);
+    if(!me){ toast("请先登录"); return; }
+    me.anon = !me.anon;
+    saveUsers(db);
+    renderAll();
+    toast(me.anon
+      ? "🕶 已开启匿名：你的内容将署名为「" + ANON_LABEL + "」"
+      : "👤 已关闭匿名：你的内容将显示昵称");
+  }
+
+  /* ---------- 上传前置：必须注册 ---------- */
+  function renderGate(){
+    var g = $("#gate");
+    if(!g) return;
+    if(session){
+      g.classList.remove("on");
+      return;
+    }
+    g.classList.add("on");
+    var anon = false;
+    g.innerHTML =
+      '<span>🔒 <b>上传内容前请先注册</b>：本站所有内容均需实名账号上传，以确保归属与权限可追溯。</span>' +
+      '<span class="g-act">' +
+        '<button class="btn p1" id="btnGateReg">立即注册</button>' +
+        '<button class="btn ghost" id="btnGateRead">只读浏览</button>' +
+      '</span>';
+    $("#btnGateReg").addEventListener("click", openAuth);
+    $("#btnGateRead").addEventListener("click", function(){
+      g.classList.remove("on");
+      toast("当前为只读浏览模式，内容不可编辑");
+    });
+  }
+
+  function renderAdmin(){
+    // 名单仅管理员可见
+    if(!isAdmin()){ toast("🔒 用户名单仅管理员可见"); return; }
+    var box = $("#apUsers");
+    box.innerHTML = "";
+    db.users.slice().sort(function(a,b){ return b.ts - a.ts; }).forEach(function(u){
+      var el = document.createElement("div");
+      el.className = "ap-item";
+      var owns = Object.keys(state.owners || {}).filter(function(k){
+        return state.owners[k] === u.id;
+      }).map(function(k){ return SECT_NAME[k] || k; });
+      // 统计各互动板块的投稿数
+      SHARED_UNITS.forEach(function(k){
+        var n = (state.feeds[k] || []).filter(function(p){ return p.uid === u.id; }).length;
+        if(n) owns.push(SECT_NAME[k] + "×" + n);
+      });
+      el.innerHTML =
+        '<span class="nm">' + escapeHtml(u.name) + '</span>' +
+        (u.anon ? '<span class="anonflag">匿名发布</span>' : "") +
+        '<span class="role ' + (u.role === "admin" ? "admin" : "user") + '">' +
+          (u.role === "admin" ? "管理员" : "上传者") + '</span>' +
+        '<span style="font-size:12px;color:var(--ink-soft);font-weight:700">负责：' +
+          (owns.length ? escapeHtml(owns.join("、")) : "暂无内容") + '</span>' +
+        '<span class="tm">' + new Date(u.ts).toLocaleDateString("zh-CN") + '</span>';
+      box.appendChild(el);
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+
+  /* ---------- 权限：把锁应用到每个内容块 ---------- */
+  function applyLock(key){
+    var box = document.getElementById(key);
+    if(!box) return;
+    var allowed = canEdit(key);
+    box.classList.toggle("locked", !allowed);
+
+    var head = box.querySelector(".chapter-head");
+    if(head){
+      var old = head.querySelector(".owner-tag");
+      if(old) old.remove();
+      var o = ownerOf(key);
+      var tag = document.createElement("span");
+      tag.className = "owner-tag" + (o && session && o === session.id ? " mine" : "");
+      if(SHARED_UNITS.indexOf(key) >= 0){
+        // 多人投稿板块：整块无归属，标签只说明性质
+        tag.textContent = "👥 多人投稿";
+        tag.style.background = "color-mix(in srgb, var(--a1) 26%, #fff)";
+      }else if(isAdmin()){
+        tag.textContent = o ? "管理员可编辑 · 归属：" + escapeHtml(publicName(o)) : "管理员可编辑 · 未归属";
+        tag.style.background = "color-mix(in srgb, var(--a2) 34%, #fff)";
+        tag.style.borderColor = "var(--ink)";
+      }else if(o && session && o === session.id){
+        var meNow = findUser(session.id);
+        tag.textContent = (meNow && meNow.anon) ? "✍️ 我上传的（匿名署名）" : "✍️ 我上传的";
+      }else if(o){
+        tag.textContent = "🔒 " + escapeHtml(publicName(o)) + " 上传";
+      }else{
+        tag.textContent = session ? "✍️ 待认领（你将获得归属）" : "🔒 需注册后可上传";
+      }
+      var acts = head.querySelector(".head-actions");
+      if(acts) head.insertBefore(tag, acts); else head.appendChild(tag);
+
+      // 归属信息后面的锁定说明
+      var ln = box.querySelector(".lock-note");
+      if(ln) ln.remove();
+      if(!allowed){
+        var d = document.createElement("div");
+        d.className = "lock-note";
+        if(ADMIN_ONLY.indexOf(key) >= 0){
+          // 仅管理员可编辑的板块：措辞与归属无关
+          d.innerHTML = "🔒 <span>本板块<b>仅管理员可编辑</b>。" +
+            (session ? "你可以自由阅读。" : "注册后即可阅读，但内容仍由管理员维护。") + "</span>";
+        }else if(SHARED_UNITS.indexOf(key) >= 0){
+          d.innerHTML = session
+            ? "✍️ <span>这是<b>多人投稿板块</b>：任何已注册同学都可以发布自己的内容，" +
+              "其他人无法修改你发布的内容。</span>"
+            : "🔒 <span>这是<b>多人投稿板块</b>：<b>注册后</b>即可发布留言、上传图片。</span>";
+        }else{
+          var ownerId = ownerOf(key);
+          if(!session){
+            d.innerHTML = "🔒 <span>当前未注册，内容为只读。<b>上传内容前请先注册</b>，" +
+              "注册后即可上传属于你自己的回忆。</span>";
+          }else{
+            var anonOwner = ownerId && isAnon(ownerId);
+            if(anonOwner) d.classList.add("anon");
+            d.innerHTML = "🔒 <span>这一部分由 <b>" + escapeHtml(publicName(ownerId)) + "</b> 上传" +
+              (anonOwner ? "（对方选择了匿名）" : "") +
+              "，你可以阅读，但无法修改。上传者只能更改自己上传的内容。</span>";
+          }
+        }
+        box.appendChild(d);
+      }
+    }
+  }
+
+  function renderAll(){
+    renderUserBar();
+    renderGate();
+    document.body.classList.toggle("is-admin", isAdmin());
+    SECTIONS.concat(["cover"]).forEach(applyLock);
+    renderFeeds();
+    lockInputs();
+  }
+
+  // 禁用不可编辑的输入框（阅读模式下全部只读）
+  function lockInputs(){
+    var readOnlyAll = readingMode || !session;      // 阅读模式 或 未注册 → 一律不可编辑
+    // 标题类内容块（前言）
+    ["preface"].forEach(function(k){
+      var ta = document.querySelector('[data-body="'+k+'"]');
+      var ti = document.querySelector('[data-title="'+k+'"]');
+      var ok = canEdit(k) && !readOnlyAll;
+      if(ta){ ta.readOnly = !ok; ta.style.backgroundColor = ok ? "" : "rgba(0,0,0,.03)"; }
+      if(ti){ ti.readOnly = !ok; }
+      var tg = document.querySelector('[data-toggle="'+k+'"]');
+      // 阅读模式下隐藏编辑切换；只读用户也不给切换
+      if(tg) tg.style.display = (ok || readingMode) ? "" : "none";
+    });
+    // 互动板块：标题与备注均仅管理员可编辑；投稿区按登录态锁定
+    SHARED_UNITS.forEach(function(k){
+      var ti = document.querySelector('[data-title="'+k+'"]');
+      // 除封面外，所有板块标题仅管理员可编辑（阅读模式下同样只读）
+      if(ti) ti.readOnly = !isAdmin() || readingMode;
+      var ni = document.querySelector('[data-note="'+k+'"]');
+      // 备注仅管理员可编辑
+      if(ni) ni.readOnly = !isAdmin() || readingMode;
+      var badge = document.querySelector('.note-badge[data-notebadge="'+k+'"]');
+      if(badge){
+        // 管理员本人可写，徽标显示可编辑态；其他人只读
+        var noteOk = isAdmin() && !readingMode;
+        badge.classList.toggle("locked", !noteOk);
+        badge.textContent = noteOk ? "管理员可编辑" : "仅管理员可编辑";
+      }
+      var ta = document.querySelector('[data-post="'+k+'"]');
+      var tp = document.querySelector('[data-posttitle="'+k+'"]');
+      var ok = !!session && !readingMode;
+      if(ta){ ta.readOnly = !ok; }
+      if(tp){ tp.readOnly = !ok; }
+      $$('[data-postanon="'+k+'"]').forEach(function(cb){
+        cb.disabled = !ok;
+        var wrap = cb.closest(".anon-toggle");
+        if(wrap){
+          wrap.style.opacity = ok ? "1" : ".45";
+          wrap.style.cursor = ok ? "pointer" : "not-allowed";
+        }
+      });
+      $$('[data-postsend="'+k+'"]').forEach(function(b){
+        b.disabled = !ok;
+        b.style.opacity = ok ? "1" : ".45";
+        b.style.cursor = ok ? "pointer" : "not-allowed";
+      });
+    });
+    // 剪贴报上传控件
+    var sf = $("#scrapFile");
+    var upOK = !!session && !readingMode;
+    if(sf) sf.disabled = !upOK;
+    var sc = $("#scrapClear");
+    if(sc){ sc.disabled = !upOK; sc.style.opacity = upOK ? "1" : ".45"; }
+    // 封面
+    var coverOK = canEdit("cover") && !readOnlyAll;
+    ["coverTitle","coverUrl"].forEach(function(id){
+      var el = $("#"+id); if(el) el.readOnly = !coverOK;
+    });
+    var cf = $("#coverFile"); if(cf) cf.disabled = !coverOK;
+    var btnCover = $("#btnCover");
+    btnCover.style.opacity = coverOK ? "1" : ".5";
+    btnCover.title = coverOK ? "" : "🔒 当前状态下封面不可修改";
+    // 换配色 / 导出 / 打印在阅读模式下依然可用，但封面设置不可用
+    var bc = $("#btnCover");
+    if(bc) bc.disabled = !coverOK;
+  }
+
+  /* ---------- Toast ---------- */
+  var toastEl = $("#toast"), toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2200);
+  }
+
+  /* ---------- 数据 ---------- */
+  var state = {
+    theme: "theme-youth",
+    cover: { title:"", sub:"", urls:[], imgs:[] },   // imgs：封面配图列表（多张则 2 秒轮播）
+    owners: {},                                      // 单元 -> 用户 id（归属人）
+    meta: { name:"", cls:"", year:"" },               // 旧版封面姓名/班级/年份（字段保留兼容，界面已移除）
+    // 封面弹幕：匿名发送，仅存文字与时间，不记录任何身份信息
+    danmaku: [],                                     // { id, text, time }
+    sections: {
+      // 标题类内容块（仅前言），默认预览模式，打开即可直接阅读
+      preface:   { title:"", body:"", preview:true, note:"" }
+    },
+    // 多人投稿流：每个板块一个数组，剪贴报存图片，其余存文字
+    feeds: {
+      guestbook:  [],   // { id, uid, name, anon, text, time }
+      memoir:     [],
+      scrapbook:  [],   // { id, uid, name, anon, text, img, time }
+      confession: [],
+      diary:      [],
+      forum:      [],   // 额外带 topic
+      epilogue:   []    // 小纸条：原「整块单文本」已改为多人各写一张
+    },
+    // 剪贴报待上传图片（暂存，选好说明后一起发布）
+    scrapDraft: { files:[], urls:[] }
+  };
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch(e){ toast("⚠️ 图片过大，本地保存已跳过"); }
+  }
+  var saveTimer;
+  function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(raw){
+        var d = JSON.parse(raw);
+        if(d.theme) state.theme = d.theme;
+        if(d.cover){
+          var c = d.cover;
+          state.cover.title = c.title || "";
+          state.cover.sub   = c.sub   || "";
+          state.cover.imgs  = Array.isArray(c.imgs) ? c.imgs.slice()
+                            : Array.isArray(c.urls) ? c.urls.slice()
+                            : (c.img ? [c.img] : []);            // 兼容旧版单图字段
+          state.cover.urls  = Array.isArray(c.urls) ? c.urls.slice() : [];
+        }
+        if(d.meta)  state.meta  = Object.assign(state.meta,  d.meta);
+        // 弹幕：旧存档若无则为空数组；已存的姓名/班级/年份字段一并忽略
+        if(Array.isArray(d.danmaku)){
+          state.danmaku = d.danmaku.filter(function(x){ return x && typeof x.text === "string"; });
+        }
+        if(d.owners) state.owners = Object.assign(state.owners || {}, d.owners);
+        if(d.sections){
+          Object.keys(d.sections).forEach(function(k){
+            if(k === "body") return;                 // 旧版正文，下面单独迁移到回忆录
+            if(k === "epilogue") return;             // 旧版小纸条为整块文本，下面迁移为一条投稿
+            if(!state.sections[k]) state.sections[k] = { title:"", body:"", preview:true, note:"" };
+            state.sections[k] = Object.assign(state.sections[k], d.sections[k]);
+          });
+        }
+        if(d.feeds){
+          Object.keys(state.feeds).forEach(function(k){
+            if(Array.isArray(d.feeds[k])) state.feeds[k] = d.feeds[k];
+          });
+        }
+        // 旧版「正文」内容并入回忆录，避免用户已写的内容丢失
+        if(d.sections && d.sections.body && (d.sections.body.body || d.sections.body.title)){
+          if(!state.feeds.memoir.length){
+            state.feeds.memoir.push({
+              id: "legacy-" + Date.now(), uid: (d.owners||{}).body || null,
+              name: "", anon: false, text: d.sections.body.body || "",
+              topic: d.sections.body.title || "", time: 0
+            });
+          }
+        }
+        // 旧版「小纸条」原为整块单文本，改为多人各写一张后并入第一条，避免内容丢失
+        if(d.sections && d.sections.epilogue && d.sections.epilogue.body &&
+           d.sections.epilogue.body.trim() && !state.feeds.epilogue.length){
+          state.feeds.epilogue.push({
+            id: "legacy-note-" + Date.now(),
+            uid: (d.owners||{}).epilogue || null,
+            name: "", anon: false,
+            text: d.sections.epilogue.body, time: 0
+          });
+        }
+        // 小纸条已改为多人投稿，不再保留整块归属
+        delete state.owners.epilogue;
+        // 前言归属权清空：仅管理员可编辑，不再由任何个人「认领」挂名
+        delete state.owners.preface;
+        // 草稿不持久化，避免占满 localStorage
+        state.scrapDraft = { files:[], urls:[] };
+      }
+    }catch(e){}
+  }
+
+  /* ---------- 主题 ---------- */
+  var THEMES = ["theme-youth","theme-citrus","theme-peach"];
+  function applyTheme(){
+    document.body.className = state.theme;
+    var bar = { "theme-youth":"#FFFBF4", "theme-citrus":"#F7FCFA", "theme-peach":"#FFF9F5" };
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", bar[state.theme] || "#FFFBF4");
+  }
+
+  /* ---------- 封面（支持多图 2 秒轮播） ---------- */
+  var slidesBox = $("#coverSlides"), dotsBox = $("#coverDots");
+  var INTERVAL = 2000;      // 每张停留 2 秒
+  var cur = 0, timer = null;
+
+  function parseUrls(text){
+    return String(text || "").split(/[\n\r]+/)
+      .map(function(s){ return s.trim(); })
+      .filter(function(s){ return /^https?:\/\//i.test(s); });
+  }
+
+  function buildSlides(){
+    // 清场
+    if(timer){ clearInterval(timer); timer = null; }
+    slidesBox.innerHTML = "";
+    dotsBox.innerHTML = "";
+    cur = 0;
+    var list = state.cover.imgs || [];
+
+    if(!list.length){ dotsBox.classList.add("hide"); return; }
+
+    list.forEach(function(src, i){
+      var s = document.createElement("div");
+      s.className = "cover-slide";
+      s.style.backgroundImage = 'url("' + src + '")';
+      slidesBox.appendChild(s);
+    });
+
+    if(list.length === 1){
+      dotsBox.classList.add("hide");
+      slidesBox.children[0].classList.add("on");
+      return;
+    }
+
+    // 指示点 + 计数
+    dotsBox.classList.remove("hide");
+    var num = document.createElement("span");
+    num.className = "num";
+    num.textContent = "1 / " + list.length;
+    dotsBox.appendChild(num);
+    list.forEach(function(_, i){
+      var b = document.createElement("button");
+      b.setAttribute("aria-label", "第" + (i+1) + "张");
+      b.addEventListener("click", function(){ go(i, true); });
+      dotsBox.appendChild(b);
+    });
+    go(0);
+    timer = setInterval(function(){ next(); }, INTERVAL);
+  }
+
+  function go(i, manual){
+    var kids = slidesBox.children, dots = dotsBox.querySelectorAll("button");
+    if(!kids.length) return;
+    if(manual && timer){ clearInterval(timer); timer = setInterval(function(){ next(); }, INTERVAL); }
+    cur = (i + kids.length) % kids.length;
+    for(var k = 0; k < kids.length; k++){
+      var on = k === cur;
+      kids[k].classList.toggle("on", on);
+      // 轻微推近的 Ken Burns 效果
+      kids[k].classList.remove("kenburns");
+      if(on){ void kids[k].offsetWidth; kids[k].classList.add("kenburns"); }
+      if(dots[k]) dots[k].classList.toggle("on", on);
+    }
+    var num = dotsBox.querySelector(".num");
+    if(num) num.textContent = (cur + 1) + " / " + kids.length;
+  }
+
+  function next(){ go(cur + 1); }
+
+  /* ============================================================
+     封面弹幕（匿名）
+     —— 数据结构刻意只保留 { id, text, time }，不写入 uid / name，
+        因此任何人（包括管理员）都无法追溯弹幕的发送者
+     —— 展示：一条弹幕从右向左匀速飘过，落在封面上方 1/3 区域内，
+        轮番播放，同屏最多 6 条，超出排队等候
+     ============================================================ */
+  var DM_MAX = 100;       // 最多保留多少条历史弹幕（超出时自动丢弃发送时间最早的一条，依次递推）
+  var DM_TRACKS = 6;      // 轨道数（同时最多飘过几条）
+  var DM_SHOW_MS = 5000;  // 单条飘过时长：5 秒
+  var dmQueue = [], dmRunning = 0, dmTimer = null;
+  var dmLayer = null, dmCountEl = null;
+
+  function dmRefreshCount(){
+    if(!dmCountEl) dmCountEl = $("#danmakuCount");
+    if(dmCountEl) dmCountEl.textContent = (state.danmaku || []).length + " 条";
+  }
+  // 把一条弹幕挂到某条轨道上播放；播放结束自动接力下一条
+  function dmPlayOne(item){
+    if(!dmLayer || !document.body.contains(dmLayer)) return;
+    var el = document.createElement("div");
+    el.className = "danmaku";
+    el.textContent = item.text;
+    // 轨道 0 在最上方，依次向下排布，均位于封面上方 1/3 内
+    var track = dmRunning % DM_TRACKS;
+    // 垂直位置：0% ~ 62%，为下方渐隐遮罩留出余量
+    var topPct = 4 + track * 9.5 + Math.random() * 5;
+    el.style.top = topPct.toFixed(1) + "%";
+    // 时长按文字长度微调：长句飘得稍慢一点（每字 +60ms，最长 +1.5s）
+    var dur = DM_SHOW_MS + Math.min(item.text.length, 25) * 60;
+    el.style.animationDuration = dur + "ms";
+    el.style.animationDelay = (Math.random() * 260).toFixed(0) + "ms";
+    dmLayer.appendChild(el);
+    dmRunning++;
+    setTimeout(function(){
+      if(el.parentNode) el.parentNode.removeChild(el);
+      dmRunning--;
+      dmNext();
+    }, dur + 320);
+  }
+  function dmNext(){
+    while(dmRunning >= DM_TRACKS && dmQueue.length === 0){
+      // 轨道全满且无待发，等待有人退出后再触发
+      return;
+    }
+    if(!dmQueue.length){
+      if(dmTimer){ clearTimeout(dmTimer); dmTimer = null; }
+      return;
+    }
+    if(dmRunning >= DM_TRACKS){ dmTimer = setTimeout(dmNext, 350); return; }
+    dmPlayOne(dmQueue.shift());
+    // 轮番：一条接一条，间隔约 700ms（配合 5 秒飘过时长安，6 条轨道约 4.2 秒轮满）
+    dmTimer = setTimeout(dmNext, 700);
+  }
+  function dmRun(){
+    // 取最近的一批重新排队轮播（最新的先播）
+    if(!dmLayer) dmLayer = $("#danmakuLayer");
+    dmRefreshCount();
+    if(!dmLayer) return;
+    var list = (state.danmaku || []).slice(-DM_TRACKS * 2).reverse();
+    dmQueue = list.slice();
+    dmNext();
+  }
+  // 离开封面时停止弹幕：清空队列并移除正在飘的元素
+  function dmStop(){
+    dmQueue = [];
+    if(dmTimer){ clearTimeout(dmTimer); dmTimer = null; }
+    if(!dmLayer) dmLayer = $("#danmakuLayer");
+    if(dmLayer) dmLayer.innerHTML = "";
+    dmRunning = 0;
+  }
+  function dmSend(){
+    var inp = $("#danmakuInput");
+    var text = inp ? inp.value.trim() : "";
+    if(!text){
+      toast("✎ 弹幕不能为空");
+      if(inp) inp.focus();
+      return;
+    }
+    if(text.length > 40) text = text.slice(0, 40);
+    // 只存文字与时间 —— 匿名，绝不记录发送者
+    state.danmaku.push({
+      id: "d" + nowTs() + "-" + Math.random().toString(36).slice(2, 7),
+      text: text, time: nowTs()
+    });
+    // 超出上限时按发送时间排序，丢弃最早的若干条（依次递推，直到回到上限）
+    if(state.danmaku.length > DM_MAX){
+      state.danmaku = state.danmaku.slice().sort(function(a, b){
+        return (a.time || 0) - (b.time || 0);
+      }).slice(-DM_MAX);
+    }
+    if(inp) inp.value = "";
+    saveSoon();
+    // 立刻插队播放，让发送者马上看到自己的弹幕
+    dmQueue.unshift({ text: text, time: Date.now() });
+    dmRefreshCount();
+    dmNext();
+    toast("💬 弹幕已飘过封面");
+  }
+
+  function applyCover(){
+    buildSlides();
+    $("#coverTitleView").textContent = state.cover.title || "好久不见，奥校的你";
+    $("#coverSubView").textContent   = state.cover.sub || "谨以此，纪念我们的青春";
+    $("#coverTitle").value = state.cover.title || "";
+    $("#coverUrl").value   = (state.cover.urls || []).join("\n");
+    dmRun();
+  }
+  function setTitleField(){
+    var v = $("#coverTitle").value.trim();
+    state.cover.title = v;
+    $("#coverTitleView").textContent = v || "好久不见，奥校的你";
+    saveSoon();
+  }
+  $("#coverTitle").addEventListener("input", function(){
+    if(!canEdit("cover")){ this.value = state.cover.title || ""; toast("🔒 封面信息仅归属者或管理员可改"); return; }
+    claim("cover");
+    setTitleField(); applyLock("cover");
+  });
+
+  /* 弹幕发送（封面外下方，匿名，无需注册） */
+  $("#danmakuSend").addEventListener("click", dmSend);
+  $("#danmakuInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); dmSend(); }
+  });
+  $("#danmakuInput").addEventListener("focus", function(){
+    if(readingMode){ this.blur(); toast("📖 阅读模式下不可发送弹幕，请先退出阅读模式"); }
+  });
+
+  $("#coverUrl").addEventListener("input", function(){
+    if(!canEdit("cover")){ this.value = (state.cover.urls||[]).join("\n"); toast("🔒 封面配图仅归属者或管理员可改"); return; }
+    claim("cover");
+    var urls = parseUrls(this.value);
+    state.cover.urls = urls;
+    state.cover.imgs = urls.slice();
+    buildSlides(); saveSoon(); applyLock("cover");
+  });
+
+  $("#coverFile").addEventListener("change", function(e){
+    if(!canEdit("cover")){ e.target.value = ""; toast("🔒 封面配图仅归属者或管理员可改"); return; }
+    claim("cover");
+    var files = Array.prototype.slice.call(e.target.files || []);
+    if(!files.length) return;
+    var ok = files.filter(function(f){ return /^image\//.test(f.type); });
+    if(!ok.length){ toast("⚠️ 请选择图片文件"); return; }
+
+    var loaded = 0, data = [];
+    ok.forEach(function(f){
+      if(f.size > 2.6 * 1024 * 1024){ toast("⚠️「" + f.name + "」超过 2.5MB，可能无法保存"); }
+      var fr = new FileReader();
+      fr.onload = function(ev){ data.push(ev.target.result); if(++loaded === ok.length) finish(); };
+      fr.onerror = function(){ if(++loaded === ok.length) finish(); };
+      fr.readAsDataURL(f);
+    });
+    function finish(){
+      state.cover.imgs = state.cover.imgs.concat(data);
+      state.cover.urls = [];
+      $("#coverUrl").value = "";
+      buildSlides(); save();
+      toast("✅ 已添加 " + data.length + " 张配图，共 " + state.cover.imgs.length + " 张轮播");
+    }
+  });
+
+  $("#btnClearCover").addEventListener("click", function(){
+    if(!canEdit("cover")){ toast("🔒 封面配图仅归属者或管理员可清空"); return; }
+    state.cover.imgs = []; state.cover.urls = [];
+    $("#coverUrl").value = ""; $("#coverFile").value = "";
+    buildSlides(); save(); toast("已恢复默认青春渐变封面");
+  });
+  $("#btnCover").addEventListener("click", function(){
+    if(!canEdit("cover")){ toast("🔒 封面由「" + publicName(ownerOf("cover")) + "」上传，你无法修改"); return; }
+    var p = $("#coverPanel");
+    var open = p.style.display === "none" || !p.style.display;
+    p.style.display = open ? "block" : "none";
+    if(open) p.scrollIntoView({behavior:"smooth", block:"center"});
+  });
+  /* ============================================================
+     互动板块：留言板 / 回忆录 / 剪贴报 / 表白墙 / 日记本 / 小论坛
+     —— 每条内容独立记录作者（uid）与匿名标记（anon）
+     —— 删除规则：仅作者本人或管理员；普通用户不能改别人的内容
+     ============================================================ */
+  function nowTs(){ return Date.now(); }
+  function fmtTime(ts){
+    if(!ts) return "";
+    var d = new Date(ts);
+    function p(n){ return (n < 10 ? "0" : "") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate())
+         + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+  // 首字母头像
+  function initialOf(name){
+    var s = String(name || "").trim();
+    if(!s) return "?";
+    var cp = s.charAt(0);
+    // 中文取首字，英文取大写
+    return /[A-Za-z]/.test(cp) ? cp.toUpperCase() : cp;
+  }
+  // 一条内容的显示名：匿名优先按发布时的选择，其次看用户当前是否开启匿名
+  function postName(p){
+    if(!p) return ANON_LABEL;
+    if(p.anon) return ANON_LABEL;
+    var u = findUser(p.uid);
+    if(u && u.anon) return ANON_LABEL;              // 用户后来开了匿名
+    if(p.name) return p.name;
+    return u ? u.name : ANON_LABEL;
+  }
+  function postIsAnon(p){
+    if(!p) return true;
+    if(p.anon) return true;
+    var u = findUser(p.uid);
+    return !!(u && u.anon);
+  }
+  // 是否可删除这条
+  function canDeletePost(p){
+    if(!session) return false;
+    if(isAdmin()) return true;
+    return !!p.uid && p.uid === session.id;
+  }
+
+  function renderFeeds(){
+    SHARED_UNITS.forEach(function(unit){
+      var box = $('[data-feed="'+unit+'"]');
+      if(!box) return;
+      var list = state.feeds[unit] || [];
+      box.innerHTML = "";
+      // 计数
+      var cnt = $('[data-feedcount="'+unit+'"]');
+      if(cnt) cnt.textContent = list.length + " " + (FEED_UNIT[unit] || "条");
+      if(!list.length){
+        var e0 = document.createElement("div");
+        e0.className = "feed-empty";
+        e0.textContent = session
+          ? "还没有人发布，来做第一个吧 ✨"
+          : "还没有内容，注册后即可发布 ✨";
+        box.appendChild(e0);
+        return;
+      }
+      // 最新的排在最前
+      var arr = list.slice().sort(function(a,b){ return (b.time||0) - (a.time||0); });
+      arr.forEach(function(p){
+        box.appendChild(unit === "scrapbook" ? buildScrapNode(p) : buildPostNode(p, unit));
+      });
+    });
+  }
+
+  function buildPostNode(p, unit){
+    var el = document.createElement("article");
+    el.className = "post";
+    var anon = postIsAnon(p);
+    var nm = postName(p);
+
+    var top = document.createElement("div");
+    top.className = "post-top";
+
+    var av = document.createElement("span");
+    av.className = "avatar" + (anon ? " anon" : "");
+    av.textContent = anon ? "匿" : initialOf(nm);
+    top.appendChild(av);
+
+    var pn = document.createElement("span");
+    pn.className = "post-name" + (anon ? " anon" : "");
+    pn.textContent = nm;
+    top.appendChild(pn);
+
+    var pt = document.createElement("span");
+    pt.className = "post-time";
+    pt.textContent = fmtTime(p.time);
+    if(pt.textContent) top.appendChild(pt);
+
+    if(anon){
+      var fl = document.createElement("span");
+      fl.className = "post-anon-flag";
+      fl.textContent = "匿名";
+      top.appendChild(fl);
+    }
+    if(canDeletePost(p)){
+      var del = document.createElement("button");
+      del.className = "post-del";
+      del.textContent = isAdmin() ? "🗑 删除" : "🗑 删除我的";
+      del.addEventListener("click", function(){ removePost(unit, p.id); });
+      top.appendChild(del);
+    }
+    el.appendChild(top);
+
+    if(unit === "forum" && p.topic){
+      var h = document.createElement("h3");
+      h.className = "post-title";
+      h.textContent = p.topic;
+      el.appendChild(h);
+    }
+    var tx = document.createElement("div");
+    tx.className = "post-text";
+    tx.textContent = p.text || "";
+    el.appendChild(tx);
+
+    // 只有小论坛支持点赞与评论
+    if(unit === "forum"){
+      el.appendChild(buildActions(p));
+    }
+    return el;
+  }
+
+  /* ============================================================
+     小论坛：点赞 + 评论
+     —— 不产生任何通知提醒：没有红点、没有私信、没有「谁赞了我」列表，
+        作者也不会被告知是谁点赞或评论了他的帖子。
+     ============================================================ */
+  function likesOf(p){
+    if(!Array.isArray(p.likes)) p.likes = [];
+    return p.likes;
+  }
+  function commentsOf(p){
+    if(!Array.isArray(p.comments)) p.comments = [];
+    return p.comments;
+  }
+  function likedByMe(p){
+    return !!session && likesOf(p).indexOf(session.id) >= 0;
+  }
+  // 点赞 / 取消点赞（同一人只算一次）
+  function toggleLike(p){
+    if(!session){ toast("🔒 登录后才能点赞"); openAuth(); return; }
+    var arr = likesOf(p), i = arr.indexOf(session.id);
+    if(i >= 0) arr.splice(i, 1);
+    else arr.push(session.id);
+    save(); renderFeeds();
+    // 只提示操作结果，不提示任何被通知的信息
+    toast(i >= 0 ? "已取消点赞" : "👍 点赞成功");
+  }
+  // 新增评论
+  function addComment(p, box){
+    if(!session){ toast("🔒 登录后才能评论"); openAuth(); return; }
+    var ta = box.querySelector("textarea");
+    var text = ta ? ta.value.trim() : "";
+    if(!text){ toast("评论不能为空"); if(ta) ta.focus(); return; }
+    var meNow = findUser(session.id);
+    commentsOf(p).push({
+      id: "c" + nowTs() + "-" + Math.random().toString(36).slice(2, 7),
+      uid: session.id,
+      name: session.name,
+      anon: !!(meNow && meNow.anon),     // 评论同样尊重用户的全局匿名设置
+      text: text,
+      time: nowTs()
+    });
+    save(); renderFeeds();
+    toast("💬 评论已发布");
+  }
+  // 评论删除：仅评论作者本人或管理员
+  function canDeleteComment(c){
+    if(!session) return false;
+    if(isAdmin()) return true;
+    return !!c.uid && c.uid === session.id;
+  }
+  function removeComment(p, cid){
+    var arr = commentsOf(p), idx = -1;
+    for(var i=0;i<arr.length;i++){ if(arr[i].id === cid){ idx = i; break; } }
+    if(idx < 0) return;
+    if(!canDeleteComment(arr[idx])){ toast("🔒 只能删除自己的评论"); return; }
+    arr.splice(idx, 1);
+    save(); renderFeeds();
+    toast("🗑 评论已删除");
+  }
+
+  // 操作栏：点赞 + 评论按钮
+  function buildActions(p){
+    var bar = document.createElement("div");
+    bar.className = "post-actions";
+
+    // 点赞
+    var like = document.createElement("button");
+    var liked = likedByMe(p);
+    like.className = "act" + (liked ? " liked" : "") + (session ? "" : " locked");
+    var li = document.createElement("span");
+    li.className = "ic";
+    li.textContent = liked ? "❤️" : "🤍";
+    var ln = document.createElement("span");
+    ln.className = "n";
+    ln.textContent = likesOf(p).length ? String(likesOf(p).length) : "";
+    like.appendChild(li); like.appendChild(ln);
+    like.setAttribute("title", liked ? "取消点赞" : "点赞");
+    like.addEventListener("click", function(){ toggleLike(p); });
+    bar.appendChild(like);
+
+    // 评论
+    var cbtn = document.createElement("button");
+    var cn = commentsOf(p).length;
+    cbtn.className = "act" + (session ? "" : " locked");
+    var ci = document.createElement("span");
+    ci.className = "ic"; ci.textContent = "💬";
+    var cn2 = document.createElement("span");
+    cn2.className = "n";
+    cn2.textContent = cn ? String(cn) : "";
+    cbtn.appendChild(ci); cbtn.appendChild(cn2);
+    cbtn.setAttribute("title", "展开评论");
+    var box = document.createElement("div");
+    box.className = "comment-box";
+    box.style.display = "none";
+    cbtn.addEventListener("click", function(){
+      var open = box.style.display === "none";
+      box.style.display = open ? "block" : "none";
+      if(open && !box.getAttribute("data-built")){
+        box.appendChild(buildCommentForm(p));
+        box.appendChild(buildCommentList(p));
+        box.setAttribute("data-built", "1");
+      }
+    });
+    bar.appendChild(cbtn);
+    bar.appendChild(box);
+    return bar;
+  }
+
+  // 评论输入框
+  function buildCommentForm(p){
+    var form = document.createElement("div");
+    form.className = "comment-form";
+    var ta = document.createElement("textarea");
+    ta.setAttribute("rows", "2");
+    ta.setAttribute("placeholder", session ? "写下你的评论…" : "登录后才能评论");
+    ta.readOnly = !session;
+    var send = document.createElement("button");
+    send.className = "btn p1 sm";
+    send.textContent = "发送";
+    send.disabled = !session;
+    send.style.opacity = session ? "1" : ".45";
+    send.style.cursor = session ? "pointer" : "not-allowed";
+    send.addEventListener("click", function(){ addComment(p, form.parentNode); });
+    ta.addEventListener("keydown", function(e){
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter") addComment(p, form.parentNode);
+    });
+    form.appendChild(ta); form.appendChild(send);
+    if(!session){
+      var hint = document.createElement("div");
+      hint.className = "comment-hint";
+      hint.textContent = "🔒 登录后即可参与评论";
+      form.appendChild(hint);
+    }else{
+      var h2 = document.createElement("div");
+      h2.className = "comment-hint";
+      h2.textContent = "Ctrl + Enter 快速发送 · 评论不会通知作者";
+      form.appendChild(h2);
+    }
+    return form;
+  }
+
+  // 评论列表（作者与读者看到的完全一致，没有任何通知标记）
+  function buildCommentList(p){
+    var box = document.createElement("div");
+    box.className = "comment-list";
+    var arr = commentsOf(p).slice().sort(function(a,b){ return (a.time||0) - (b.time||0); });
+    arr.forEach(function(c){
+      var row = document.createElement("div");
+      row.className = "comment";
+      var anon = postIsAnon(c);
+
+      var av = document.createElement("span");
+      av.className = "avatar" + (anon ? " anon" : "");
+      av.textContent = anon ? "匿" : initialOf(postName(c));
+      row.appendChild(av);
+
+      var main = document.createElement("div");
+      main.className = "comment-main";
+
+      var meta = document.createElement("div");
+      meta.className = "comment-meta";
+      var who = document.createElement("span");
+      who.className = "comment-who" + (anon ? " anon" : "");
+      who.textContent = postName(c);
+      meta.appendChild(who);
+      var when = document.createElement("span");
+      when.className = "comment-when";
+      when.textContent = fmtTime(c.time);
+      if(when.textContent) meta.appendChild(when);
+      if(canDeleteComment(c)){
+        var cd = document.createElement("button");
+        cd.className = "comment-del";
+        cd.textContent = isAdmin() ? "删除" : "删除我的";
+        cd.addEventListener("click", function(){ removeComment(p, c.id); });
+        meta.appendChild(cd);
+      }
+      main.appendChild(meta);
+
+      var tx = document.createElement("div");
+      tx.className = "comment-text";
+      tx.textContent = c.text || "";
+      main.appendChild(tx);
+      row.appendChild(main);
+      box.appendChild(row);
+    });
+    return box;
+  }
+
+  // 剪贴报：图片卡片，右下角署名（匿名则完全不显示）
+  function buildScrapNode(p){
+    var el = document.createElement("figure");
+    el.className = "scrap";
+    el.setAttribute("data-anon", postIsAnon(p) ? "1" : "0");
+
+    var img = document.createElement("img");
+    img.setAttribute("src", p.img || "");
+    img.setAttribute("alt", "剪贴报图片");
+    img.setAttribute("loading", "lazy");
+    el.appendChild(img);
+
+    if(p.text){
+      var cap = document.createElement("figcaption");
+      cap.className = "scrap-cap";
+      cap.textContent = p.text;
+      el.appendChild(cap);
+    }
+
+    // 署名：仅实名才生成节点，匿名时 DOM 里根本不存在
+    if(!postIsAnon(p)){
+      var sig = document.createElement("figcaption");
+      sig.className = "scrap-sig";
+      sig.textContent = postName(p);
+      el.appendChild(sig);
+    }
+
+    if(canDeletePost(p)){
+      var del = document.createElement("button");
+      del.className = "scrap-del";
+      del.textContent = "×";
+      del.setAttribute("title", isAdmin() ? "删除（管理员）" : "删除我上传的");
+      del.setAttribute("aria-label", "删除这张图片");
+      del.addEventListener("click", function(){ removePost("scrapbook", p.id); });
+      el.appendChild(del);
+    }
+    return el;
+  }
+
+  function removePost(unit, id){
+    var list = state.feeds[unit] || [];
+    var idx = -1;
+    for(var i=0;i<list.length;i++){ if(list[i].id === id){ idx = i; break; } }
+    if(idx < 0) return;
+    var p = list[idx];
+    if(!canDeletePost(p)){ toast("🔒 只能删除自己发布的内容"); return; }
+    list.splice(idx, 1);
+    saveSoon();
+    renderFeeds();
+    toast("🗑 已删除");
+  }
+
+  // 发布一条文字内容
+  function submitPost(unit){
+    if(!session){ toast("🔒 请先注册后再发布内容"); openAuth(); return; }
+    if(readingMode){ toast("📖 阅读模式下不可发布，请先退出阅读模式"); return; }
+    var ta = $('[data-post="'+unit+'"]');
+    var text = ta ? ta.value.trim() : "";
+    var topic = "";
+    var tp = $('[data-posttitle="'+unit+'"]');
+    if(tp) topic = tp.value.trim();
+    if(unit === "forum" && !topic){
+      toast("请先填写标题"); if(tp) tp.focus(); return;
+    }
+    if(!text){ toast("内容不能为空"); if(ta) ta.focus(); return; }
+    var cb = $('[data-postanon="'+unit+'"]');
+    var anon = !!(cb && cb.checked);
+    var meNow = findUser(session.id);
+    state.feeds[unit].push({
+      id: "p" + nowTs() + "-" + Math.random().toString(36).slice(2, 7),
+      uid: session.id,
+      name: session.name,
+      anon: anon || !!(meNow && meNow.anon),   // 用户全局匿名开关同样生效
+      text: text,
+      topic: topic,
+      time: nowTs(),
+      likes: [],       // 点赞：存用户 id 数组，同一人只算一次
+      comments: []     // 评论：{ id, uid, name, anon, text, time }
+    });
+    if(ta) ta.value = "";
+    if(tp) tp.value = "";
+    save(); renderFeeds();
+    toast(anon ? "🕶 已匿名发布" : "✅ 已发布");
+  }
+
+  $$("[data-postsend]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var unit = btn.getAttribute("data-postsend");
+      // 剪贴报有专属的图片上传逻辑
+      if(unit === "scrapbook") submitScrap(); else submitPost(unit);
+    });
+  });
+
+  /* ---------- 剪贴报：图片上传 ---------- */
+  var scrapDraft = { files:[], urls:[] };   // 待发布：本地文件与外链
+  function pendingScrapCount(){ return scrapDraft.files.length + scrapDraft.urls.length; }
+
+  $("#scrapFile").addEventListener("change", function(e){
+    if(!session){ toast("🔒 请先注册后再上传图片"); e.target.value = ""; return; }
+    var files = Array.prototype.slice.call(e.target.files || []);
+    e.target.value = "";
+    var ok = files.filter(function(f){ return /^image\//.test(f.type); });
+    if(!ok.length){ if(files.length) toast("⚠️ 请选择图片文件"); return; }
+    var budget = 24;   // 本地存储有限，一次最多接收 24 张
+    if(ok.length > budget){ ok = ok.slice(0, budget); toast("⚠️ 一次最多上传 " + budget + " 张，已取前 " + budget + " 张"); }
+    var loaded = 0, added = 0;
+    ok.forEach(function(f){
+      if(f.size > 2.4 * 1024 * 1024) toast("⚠️「" + f.name + "」超过 2.4MB，可能无法保存");
+      var fr = new FileReader();
+      fr.onload = function(ev){
+        scrapDraft.files.push(ev.target.result);
+        added++;
+        if(++loaded === ok.length){
+          toast("✅ 已选入 " + added + " 张，点击「上传图片」发布");
+        }
+      };
+      fr.onerror = function(){ if(++loaded === ok.length) toast("⚠️ 有图片读取失败"); };
+      fr.readAsDataURL(f);
+    });
+  });
+
+  $("#scrapClear").addEventListener("click", function(){
+    if(!session){ toast("🔒 请先注册"); return; }
+    scrapDraft = { files:[], urls:[] };
+    var ta = $('[data-post="scrapbook"]'); if(ta) ta.value = "";
+    toast("🧹 已清空待上传的图片");
+  });
+
+  // 剪贴报发布：把暂存的图片一次性写入图片墙
+  function submitScrap(){
+    if(!session){ toast("🔒 请先注册后再上传图片"); openAuth(); return; }
+    if(readingMode){ toast("📖 阅读模式下不可上传，请先退出阅读模式"); return; }
+    var n = pendingScrapCount();
+    if(!n){ toast("请先选择要上传的图片"); return; }
+    var ta = $('[data-post="scrapbook"]');
+    var text = ta ? ta.value.trim() : "";
+    var cb = $('[data-postanon="scrapbook"]');
+    var anon = !!(cb && cb.checked);
+    var meNow = findUser(session.id);
+    var finalAnon = anon || !!(meNow && meNow.anon);
+    var stamp = nowTs();
+    var imgs = scrapDraft.files.concat(scrapDraft.urls);
+    imgs.forEach(function(src, i){
+      state.feeds.scrapbook.push({
+        id: "s" + stamp + "-" + i + "-" + Math.random().toString(36).slice(2, 6),
+        uid: session.id, name: session.name, anon: finalAnon,
+        text: i === 0 ? text : "",      // 说明文字只挂在第一张上
+        img: src, time: stamp
+      });
+    });
+    scrapDraft = { files:[], urls:[] };
+    if(ta) ta.value = "";
+    save(); renderFeeds();
+    toast((finalAnon ? "🕶 已匿名上传 " : "📤 已上传 ") + n + " 张图片");
+  }
+  // 剪贴报走专属上传逻辑（见下方 submitScrap）
+
+  /* ---------- 章节 ---------- */
+  function autoGrow(el){ el.style.height = "auto"; el.style.height = Math.max(el.scrollHeight, 210) + "px"; }
+
+  // 同步「前言 / 尾声」两个长文本块
+  function refreshSection(key){
+    var s = state.sections[key];
+    if(!s) return;
+    var ta = $('[data-body="'+key+'"]');
+    var pv = $('[data-preview="'+key+'"]');
+    var ct = $('[data-count="'+key+'"]');
+    var tg = $('[data-toggle="'+key+'"]');
+    var box = document.getElementById(key);
+    if(pv){
+      pv.textContent = s.body;
+      if(key === "preface" && s.body.trim()) pv.classList.add("dropcap");
+    }
+    if(ct) ct.textContent = s.body.replace(/\s/g,"").length + " 字";
+    if(tg) tg.textContent = s.preview ? "继续编辑" : "预览";
+    if(box) box.classList.toggle("reading", s.preview);
+    if(ta) autoGrow(ta);
+  }
+
+  $$("[data-body]").forEach(function(ta){
+    var key = ta.getAttribute("data-body");
+    if(!state.sections[key]) state.sections[key] = { title:"", body:"", preview:true, note:"" };
+    if(state.sections[key].body) ta.value = state.sections[key].body;
+    ta.addEventListener("focus", function(){
+      if(readingMode){
+        this.blur();
+        toast("📖 阅读模式下不可编辑，请先退出阅读模式");
+        return;
+      }
+      if(!canEdit(key)){
+        this.blur();
+        toast(session ? "🔒 这一部分由「" + publicName(ownerOf(key)) + "」上传，你无法修改" : "🔒 请先登录后再上传内容");
+      }
+    });
+    ta.addEventListener("input", function(){
+      if(!canEdit(key)){
+        // 双保险：即使 readOnly 被绕过（如开发者工具），也把内容还原
+        this.value = state.sections[key].body || "";
+        refreshSection(key);
+        return;
+      }
+      claim(key);
+      state.sections[key].body = this.value;
+      refreshSection(key); saveSoon(); applyLock(key);
+    });
+    ta.addEventListener("keydown", function(e){
+      if(e.key === "Tab"){
+        e.preventDefault();
+        var st = this.selectionStart, en = this.selectionEnd;
+        this.value = this.value.slice(0,st) + "　　" + this.value.slice(en);
+        this.selectionStart = this.selectionEnd = st + 2;
+        state.sections[key].body = this.value;
+        refreshSection(key); saveSoon();
+      }
+    });
+    refreshSection(key);
+  });
+
+  $$("[data-title]").forEach(function(inp){
+    var key = inp.getAttribute("data-title");
+    if(state.sections[key] && state.sections[key].title) inp.value = state.sections[key].title;
+    inp.addEventListener("input", function(){
+      // 除封面外，所有板块标题仅管理员可编辑
+      if(!session){
+        this.value = (state.sections[key] && state.sections[key].title) || "";
+        toast("🔒 板块标题仅管理员可编辑");
+        return;
+      }
+      if(!isAdmin()){
+        this.value = (state.sections[key] && state.sections[key].title) || "";
+        toast("🔒 板块标题仅管理员可编辑");
+        return;
+      }
+      if(!state.sections[key]) state.sections[key] = { title:"", body:"", preview:true, note:"" };
+      state.sections[key].title = this.value; saveSoon();
+    });
+  });
+
+  /* ---------- 板块备注（仅管理员可编辑，标题下方一行） ---------- */
+  $$("[data-note]").forEach(function(inp){
+    var key = inp.getAttribute("data-note");
+    if(!state.sections[key]) state.sections[key] = { title:"", body:"", preview:true, note:"" };
+    if(state.sections[key].note) inp.value = state.sections[key].note;
+    inp.addEventListener("input", function(){
+      if(!session || !isAdmin()){
+        this.value = state.sections[key].note || "";
+        toast("🔒 备注仅管理员可编辑");
+        return;
+      }
+      state.sections[key].note = this.value; saveSoon();
+    });
+    inp.addEventListener("focus", function(){
+      if(!session || !isAdmin()){
+        this.blur();
+        toast("🔒 备注仅管理员可编辑");
+      }
+    });
+  });
+
+  $$("[data-toggle]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var key = btn.getAttribute("data-toggle");
+      state.sections[key].preview = !state.sections[key].preview;
+      refreshSection(key); saveSoon();
+    });
+  });
+
+  /* ============================================================
+     阅读模式：分页浏览
+     板块顺序：封面 → 前言 → 留言板 → 回忆录 → 剪贴报 → 表白墙 → 日记本 → 小论坛 → 小纸条
+     切换规则：
+       封面 → 前言 ......... 接力缩放（封面缩小消失 → 前言由中心放大）
+       其余板块之间 ......... 普通直接切换（新页一次极短淡入）
+       翻页动画已全部移除，不再有左右倒伏与掠光
+  ============================================================ */
+  var PAGES = ["cover","preface","guestbook","memoir","scrapbook","confession","diary","forum","epilogue"];
+  var PAGE_TITLE = {
+    cover:"封面", preface:"前言", guestbook:"留言板", memoir:"回忆录",
+    scrapbook:"剪贴报", confession:"表白墙", diary:"日记本", forum:"小论坛", epilogue:"小纸条"
+  };
+  var pageIdx = 0;
+  var readingMode = false;
+  var $flash = $("#zoomFlash");
+  // 接力缩放：第一拍封面缩小消失，第二拍前言由中心极小点放大
+  var BEAT_OUT = 500, BEAT_IN = 500, BEAT_TOTAL = BEAT_OUT + BEAT_IN;
+  var zoomTimers = [];
+  var relayLock = false;   // 接力转场进行中，吞掉中途的切页请求，避免动画重入
+  function clearTimers(arr){ arr.forEach(clearTimeout); arr.length = 0; }
+
+  // 封面消失 →（停顿一拍）→ 前言出现，严格先后不重叠
+  function zoomRelay(thenPage){
+    clearTimers(zoomTimers);
+    relayLock = true;
+    var b = document.body;
+    b.classList.remove("zooming-in");
+    b.classList.add("zooming-out");            // 第一拍：封面在场缩小
+
+    zoomTimers.push(setTimeout(function(){
+      b.classList.remove("zooming-out");        // 封面已完全退场
+      b.classList.add("zooming-in");            // 第二拍：前言从一点放大
+      thenPage();                               // 此刻才切页，让 .is-current 就位
+      if($flash){
+        $flash.classList.remove("run");
+        void $flash.offsetWidth;
+        $flash.classList.add("run");
+      }
+    }, BEAT_OUT));
+
+    zoomTimers.push(setTimeout(function(){
+      b.classList.remove("zooming-in");
+      if($flash) $flash.classList.remove("run");
+      relayLock = false;
+    }, BEAT_TOTAL));
+  }
+
+  // 转到第 idx 页
+  function goPage(idx, opts){
+    opts = opts || {};
+    var next = Math.max(0, Math.min(PAGES.length - 1, idx));
+    var prev = pageIdx;
+    if(next === prev && !opts.force) return;
+    if(relayLock && !opts.force) return;
+
+    var back = next < prev;
+    var from = PAGES[prev], to = PAGES[next];
+
+    function apply(){
+      pageIdx = next;
+      renderPages();
+    }
+
+    // 封面→前言：走接力缩放（内部会在第二拍切页）
+    if(!opts.silent && !back && from === "cover" && to === "preface"){
+      zoomRelay(apply);
+      return;
+    }
+
+    // 其余板块：普通直接切换（CSS 里仅对新页做一次 0.22s 淡入）
+    clearTimers(zoomTimers);
+    relayLock = false;
+    document.body.classList.remove("zooming-out","zooming-in");
+    if($flash) $flash.classList.remove("run");
+
+    apply();
+  }
+
+  function renderPages(){
+    var cur = PAGES[pageIdx];
+    PAGES.forEach(function(p, i){
+      var el = document.getElementById(p);
+      if(!el) return;
+      el.classList.toggle("is-current", i === pageIdx);
+    });
+    // 圆点
+    var box = $("#rpDots");
+    if(box){
+      box.innerHTML = "";
+      PAGES.forEach(function(p, i){
+        var b = document.createElement("button");
+        b.className = "d2" + (i === pageIdx ? " on" : "");
+        b.setAttribute("aria-label", PAGE_TITLE[p]);
+        b.addEventListener("click", function(){ goPage(i); });
+        box.appendChild(b);
+      });
+    }
+    var c = $("#rpCnt"); if(c) c.textContent = (pageIdx + 1) + " / " + PAGES.length;
+    // 封面页可见时轮播弹幕，离开封面则停止，避免空转
+    if(cur === "cover") dmRun(); else dmStop();
+    var pv = $("#btnPrev"), nx = $("#btnNext");
+    if(pv) pv.disabled = pageIdx === 0;
+    if(nx) nx.disabled = pageIdx === PAGES.length - 1;
+    var hint = $("#rmHint");
+    if(hint){
+      hint.textContent = "📖 阅读模式中 · 内容不可编辑"
+        + (session ? "，点击右上角「✕ 退出阅读」回到编辑。" : "。未注册用户仅可使用阅读模式。");
+      hint.classList.toggle("on", !session);
+    }
+    onScroll();
+  }
+
+  function enterReading(){
+    readingMode = true;
+    document.body.classList.add("mode-reading","paging");
+    pageIdx = 0;
+    renderPages();
+    lockInputs();
+    toast("📖 已进入阅读模式");
+    if(!session) setTimeout(function(){
+      toast("未注册用户仅可使用阅读模式，如需上传请先注册");
+    }, 1200);
+  }
+  function exitReading(){
+    readingMode = false;
+    relayLock = false;
+    clearTimers(zoomTimers);
+    clearTimers(zoomTimers);
+    document.body.classList.remove("mode-reading","paging","zooming-out","zooming-in");
+    PAGES.forEach(function(p){
+      var el = document.getElementById(p);
+      if(el) el.classList.remove("is-current");
+    });
+    try{ window.scrollTo({ top: window.scrollY, behavior: "auto" }); }catch(e){}
+    lockInputs();
+    onScroll();
+    toast("已退出阅读模式");
+  }
+
+  $("#btnReadMode").addEventListener("click", enterReading);
+  $("#btnReadModeOff").addEventListener("click", exitReading);
+  $("#btnPrev").addEventListener("click", function(){ goPage(pageIdx - 1); });
+  $("#btnNext").addEventListener("click", function(){ goPage(pageIdx + 1); });
+
+  // 阅读模式下的键盘操作
+  document.addEventListener("keydown", function(e){
+    if(!readingMode) return;
+    if($("#authModal").classList.contains("on") || $("#loginModal").classList.contains("on")) return;
+    if(e.key === "ArrowRight" || e.key === "PageDown"){ goPage(pageIdx + 1); }
+    if(e.key === "ArrowLeft"  || e.key === "PageUp"){ goPage(pageIdx - 1); }
+  });
+
+  // 未注册用户：仅可阅读（自动进入阅读模式，禁止编辑入口）
+  function applyRoleGate(){
+    if(!session){
+      if(!readingMode) enterReading();
+    }else if(readingMode && document.body.classList.contains("auto-read")){
+      exitReading();
+      document.body.classList.remove("auto-read");
+    }
+  }
+
+  /* ---------- 导出 ---------- */
+  $("#btnMd").addEventListener("click", function(){
+    var L = [];
+    L.push("# " + (state.cover.title || "好久不见，奥校的你"));
+    L.push("");
+    L.push("> " + (state.cover.sub || "谨以此，纪念我们的青春"));
+    var meta = [state.meta.name, state.meta.cls, state.meta.year].filter(Boolean).join(" · ");
+    if(meta) L.push("> " + meta);
+    // 封面弹幕（匿名，仅文字）
+    if(state.danmaku && state.danmaku.length){
+      L.push("");
+      L.push("## 💬 封面弹幕（匿名）");
+      L.push("");
+      state.danmaku.forEach(function(d){
+        var dt = fmtTime(d.time);
+        L.push("- " + d.text + (dt ? "　`" + dt + "`" : ""));
+      });
+      L.push("");
+    }
+    L.push("");
+    // 标题类内容块（前言）
+    ["preface"].forEach(function(k){
+      var s = state.sections[k];
+      if(!s.body.trim() && !s.title.trim()) return;
+      L.push("## " + (s.title || SECT_NAME[k]));
+      L.push("> 本板块仅管理员可编辑");
+      L.push("");
+      L.push(s.body || "（空）");
+      L.push("");
+    });
+    // 互动板块
+    SHARED_UNITS.forEach(function(k){
+      var list = state.feeds[k] || [];
+      var sec = state.sections[k] || {};
+      var t = sec.title;
+      L.push("## " + (t || SECT_NAME[k]));
+      L.push("");
+      // 备注（仅管理员可编辑）
+      if(sec.note && sec.note.trim()) L.push("> " + sec.note.trim() + "\n");
+      if(!list.length){ L.push("（暂无内容）"); L.push(""); return; }
+      var arr = list.slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
+      arr.forEach(function(p, i){
+        var who = postIsAnon(p) ? ANON_LABEL : postName(p);
+        var head = (i+1) + ". " + (p.topic ? "**" + p.topic + "** " : "") + "—— " + who;
+        var tm = fmtTime(p.time);
+        L.push(head + (tm ? "　`" + tm + "`" : ""));
+        if(k === "scrapbook"){
+          L.push("> 图片一张（" + (postIsAnon(p) ? "匿名上传" : who + " 上传") + "）");
+        }
+        if(p.text) L.push("");
+        if(p.text) L.push(p.text);
+        // 小论坛：导出点赞数与评论列表
+        if(k === "forum"){
+          var lk = likesOf(p).length;
+          var cs = commentsOf(p);
+          var tail = "❤️ " + lk + (cs.length ? " · 💬 " + cs.length : "");
+          if(lk || cs.length) L.push(""); L.push("> " + tail);
+          if(cs.length){
+            cs.slice().sort(function(a,b){ return (a.time||0)-(b.time||0); }).forEach(function(c){
+              var cw = c.anon ? ANON_LABEL : (c.name || ANON_LABEL);
+              var ctm = fmtTime(c.time);
+              L.push("> - **" + cw + "**" + (ctm ? "　`" + ctm + "`" : "") + "：" + (c.text || ""));
+            });
+          }
+        }
+        L.push("");
+      });
+    });
+    var blob = new Blob(["\ufeff" + L.join("\n")], {type:"text/markdown;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "中学回忆录.md";
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast("⬇️ 已导出 Markdown");
+  });
+  $("#btnPrint").addEventListener("click", function(){ window.print(); });
+
+  /* ---------- 换配色 ---------- */
+  $("#btnTheme").addEventListener("click", function(){
+    var i = THEMES.indexOf(state.theme);
+    state.theme = THEMES[(i + 1) % THEMES.length];
+    applyTheme(); save(); toast("🎨 配色已切换");
+  });
+
+  /* ---------- 滚动进度 + 导航高亮 ---------- */
+  var bar = $("#bar"), links = $$(".nav-links a");
+  function onScroll(){
+    var h = document.documentElement;
+    var pct = h.scrollTop / Math.max(h.scrollHeight - h.clientHeight, 1);
+    bar.style.width = (pct * 100).toFixed(2) + "%";
+    var y = h.scrollTop + 120, cur = "cover";
+    links.forEach(function(a){
+      var el = document.querySelector(a.getAttribute("href"));
+      if(el && el.offsetTop <= y) cur = a.getAttribute("href").slice(1);
+    });
+    links.forEach(function(a){
+      a.classList.toggle("on", a.getAttribute("href") === "#" + cur);
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+
+  /* ---------- 出场动画 ---------- */
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {threshold:.12, rootMargin:"0px 0px -8% 0px"});
+    $$(".reveal").forEach(function(el,i){ el.style.transitionDelay = (i*0.08)+"s"; io.observe(el); });
+  } else {
+    $$(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+
+  /* ---------- 启动 ---------- */
+  load();
+  applyTheme();
+  applyCover();
+  // 旧存档若未存 preview 字段，默认为预览模式
+  Object.keys(state.sections).forEach(function(k){
+    if(typeof state.sections[k].preview !== "boolean") state.sections[k].preview = true;
+  });
+  // 只对「前言 / 尾声」两个长文本块做内容同步
+  ["preface"].forEach(refreshSection);
+  // 互动板块标题回填
+  SHARED_UNITS.forEach(function(k){
+    var s = state.sections[k];
+    if(s && s.title){
+      var ti = document.querySelector('[data-title="'+k+'"]');
+      if(ti) ti.value = s.title;
+    }
+  });
+
+  renderAll();
+  renderPages();
+  window.addEventListener("resize", function(){ $$("[data-body]").forEach(autoGrow); });
+  onScroll();
+
+  // 未注册用户：仅可使用阅读模式（自动进入，登录后自动退出）
+  if(!session){
+    enterReading();
+    document.body.classList.add("auto-read");
+  }
+
+  // 首次访问：自动弹出注册引导（点「先逛逛」可跳过）
+  if(!hasAdmin() && !session){
+    setTimeout(function(){
+      if(!session) openAuth();
+    }, 900);
+  } else if(!session){
+    toast("👤 当前为只读浏览 · 上传内容前请先注册");
+  }
+})();
+</script>
+</body>
+</html>
